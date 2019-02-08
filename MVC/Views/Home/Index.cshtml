@@ -1,0 +1,39 @@
+﻿@model IEnumerable<MVC.Models.appointments>
+@{
+	ViewBag.Title = "Index";
+}
+<h2>Rendez-vous<span>@DateTime.Today.ToString("dd/MM/yyyy")</span></h2>
+<p class="btn img-rounded">
+	@Html.ActionLink("Ajouter un Rendez-vous", "Create")
+</p>
+<table class="table">
+	<tr>
+		<th>
+			@Html.DisplayNameFor(model => model.dateHour)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.brokers.lastname)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.customers.lastname)
+		</th>
+	</tr>
+	@foreach (var item in Model)
+	{
+		<tr>
+			<td>
+				@Html.DisplayFor(modelItem => item.dateHour)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.brokers.lastname)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.customers.lastname)
+			</td>
+			<td>
+				@Html.ActionLink("Editer", "Edit", new { id = item.idAppointment }) |
+				@Html.ActionLink("Supprimer", "Delete", new { id = item.idAppointment })
+			</td>
+		</tr>
+	}
+</table>

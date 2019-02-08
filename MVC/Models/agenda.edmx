@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="agendaModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="appointments">
+          <Key>
+            <PropertyRef Name="idAppointment" />
+          </Key>
+          <Property Name="idAppointment" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="dateHour" Type="datetime" Nullable="false" />
+          <Property Name="idBroker" Type="int" Nullable="false" />
+          <Property Name="idCustomer" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="brokers">
+          <Key>
+            <PropertyRef Name="idBroker" />
+          </Key>
+          <Property Name="idBroker" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="lastname" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="firstname" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="mail" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="phoneNumber" Type="varchar" MaxLength="10" Nullable="false" />
+        </EntityType>
+        <EntityType Name="customers">
+          <Key>
+            <PropertyRef Name="idCustomer" />
+          </Key>
+          <Property Name="idCustomer" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="lastname" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="firstname" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="mail" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="phoneNumber" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="budget" Type="int" Nullable="false" />
+          <Property Name="subject" Type="text" Nullable="false" />
+        </EntityType>
+        <Association Name="appointments_brokers_FK">
+          <End Role="brokers" Type="Self.brokers" Multiplicity="1" />
+          <End Role="appointments" Type="Self.appointments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="brokers">
+              <PropertyRef Name="idBroker" />
+            </Principal>
+            <Dependent Role="appointments">
+              <PropertyRef Name="idBroker" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="appointments_customers0_FK">
+          <End Role="customers" Type="Self.customers" Multiplicity="1" />
+          <End Role="appointments" Type="Self.appointments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="customers">
+              <PropertyRef Name="idCustomer" />
+            </Principal>
+            <Dependent Role="appointments">
+              <PropertyRef Name="idCustomer" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="agendaModelStoreContainer">
+          <EntitySet Name="appointments" EntityType="Self.appointments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="brokers" EntityType="Self.brokers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="customers" EntityType="Self.customers" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="appointments_brokers_FK" Association="Self.appointments_brokers_FK">
+            <End Role="brokers" EntitySet="brokers" />
+            <End Role="appointments" EntitySet="appointments" />
+          </AssociationSet>
+          <AssociationSet Name="appointments_customers0_FK" Association="Self.appointments_customers0_FK">
+            <End Role="customers" EntitySet="customers" />
+            <End Role="appointments" EntitySet="appointments" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="agendaModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="appointments">
+          <Key>
+            <PropertyRef Name="idAppointment" />
+          </Key>
+          <Property Name="idAppointment" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="dateHour" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="idBroker" Type="Int32" Nullable="false" />
+          <Property Name="idCustomer" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="brokers" Relationship="Self.appointments_brokers_FK" FromRole="appointments" ToRole="brokers" />
+          <NavigationProperty Name="customers" Relationship="Self.appointments_customers0_FK" FromRole="appointments" ToRole="customers" />
+        </EntityType>
+        <EntityType Name="brokers">
+          <Key>
+            <PropertyRef Name="idBroker" />
+          </Key>
+          <Property Name="idBroker" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="lastname" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="firstname" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="mail" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="phoneNumber" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="appointments" Relationship="Self.appointments_brokers_FK" FromRole="brokers" ToRole="appointments" />
+        </EntityType>
+        <EntityType Name="customers">
+          <Key>
+            <PropertyRef Name="idCustomer" />
+          </Key>
+          <Property Name="idCustomer" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="lastname" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="firstname" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="mail" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="phoneNumber" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="budget" Type="Int32" Nullable="false" />
+          <Property Name="subject" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="appointments" Relationship="Self.appointments_customers0_FK" FromRole="customers" ToRole="appointments" />
+        </EntityType>
+        <Association Name="appointments_brokers_FK">
+          <End Role="brokers" Type="Self.brokers" Multiplicity="1" />
+          <End Role="appointments" Type="Self.appointments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="brokers">
+              <PropertyRef Name="idBroker" />
+            </Principal>
+            <Dependent Role="appointments">
+              <PropertyRef Name="idBroker" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="appointments_customers0_FK">
+          <End Role="customers" Type="Self.customers" Multiplicity="1" />
+          <End Role="appointments" Type="Self.appointments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="customers">
+              <PropertyRef Name="idCustomer" />
+            </Principal>
+            <Dependent Role="appointments">
+              <PropertyRef Name="idCustomer" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="agendaEntities2" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="appointments" EntityType="Self.appointments" />
+          <EntitySet Name="brokers" EntityType="Self.brokers" />
+          <EntitySet Name="customers" EntityType="Self.customers" />
+          <AssociationSet Name="appointments_brokers_FK" Association="Self.appointments_brokers_FK">
+            <End Role="brokers" EntitySet="brokers" />
+            <End Role="appointments" EntitySet="appointments" />
+          </AssociationSet>
+          <AssociationSet Name="appointments_customers0_FK" Association="Self.appointments_customers0_FK">
+            <End Role="customers" EntitySet="customers" />
+            <End Role="appointments" EntitySet="appointments" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="agendaModelStoreContainer" CdmEntityContainer="agendaEntities2">
+          <EntitySetMapping Name="appointments">
+            <EntityTypeMapping TypeName="agendaModel.appointments">
+              <MappingFragment StoreEntitySet="appointments">
+                <ScalarProperty Name="idAppointment" ColumnName="idAppointment" />
+                <ScalarProperty Name="dateHour" ColumnName="dateHour" />
+                <ScalarProperty Name="idBroker" ColumnName="idBroker" />
+                <ScalarProperty Name="idCustomer" ColumnName="idCustomer" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="brokers">
+            <EntityTypeMapping TypeName="agendaModel.brokers">
+              <MappingFragment StoreEntitySet="brokers">
+                <ScalarProperty Name="idBroker" ColumnName="idBroker" />
+                <ScalarProperty Name="lastname" ColumnName="lastname" />
+                <ScalarProperty Name="firstname" ColumnName="firstname" />
+                <ScalarProperty Name="mail" ColumnName="mail" />
+                <ScalarProperty Name="phoneNumber" ColumnName="phoneNumber" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="customers">
+            <EntityTypeMapping TypeName="agendaModel.customers">
+              <MappingFragment StoreEntitySet="customers">
+                <ScalarProperty Name="idCustomer" ColumnName="idCustomer" />
+                <ScalarProperty Name="lastname" ColumnName="lastname" />
+                <ScalarProperty Name="firstname" ColumnName="firstname" />
+                <ScalarProperty Name="mail" ColumnName="mail" />
+                <ScalarProperty Name="phoneNumber" ColumnName="phoneNumber" />
+                <ScalarProperty Name="budget" ColumnName="budget" />
+                <ScalarProperty Name="subject" ColumnName="subject" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Aucun" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

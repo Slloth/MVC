@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="agendaModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="appointments">
+    <Key>
+      <PropertyRef Name="idAppointment" />
+    </Key>
+    <Property Name="idAppointment" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="dateHour" Type="datetime" Nullable="false" />
+    <Property Name="idBroker" Type="int" Nullable="false" />
+    <Property Name="idCustomer" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="brokers">
+    <Key>
+      <PropertyRef Name="idBroker" />
+    </Key>
+    <Property Name="idBroker" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="lastname" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="firstname" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="mail" Type="varchar" MaxLength="100" Nullable="false" />
+    <Property Name="phoneNumber" Type="varchar" MaxLength="10" Nullable="false" />
+  </EntityType>
+  <EntityType Name="customers">
+    <Key>
+      <PropertyRef Name="idCustomer" />
+    </Key>
+    <Property Name="idCustomer" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="lastname" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="firstname" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="mail" Type="varchar" MaxLength="100" Nullable="false" />
+    <Property Name="phoneNumber" Type="varchar" MaxLength="10" Nullable="false" />
+    <Property Name="budget" Type="int" Nullable="false" />
+    <Property Name="subject" Type="text" Nullable="false" />
+  </EntityType>
+  <Association Name="appointments_brokers_FK">
+    <End Role="brokers" Type="Self.brokers" Multiplicity="1" />
+    <End Role="appointments" Type="Self.appointments" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="brokers">
+        <PropertyRef Name="idBroker" />
+      </Principal>
+      <Dependent Role="appointments">
+        <PropertyRef Name="idBroker" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="appointments_customers0_FK">
+    <End Role="customers" Type="Self.customers" Multiplicity="1" />
+    <End Role="appointments" Type="Self.appointments" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="customers">
+        <PropertyRef Name="idCustomer" />
+      </Principal>
+      <Dependent Role="appointments">
+        <PropertyRef Name="idCustomer" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="agendaModelStoreContainer">
+    <EntitySet Name="appointments" EntityType="Self.appointments" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="brokers" EntityType="Self.brokers" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="customers" EntityType="Self.customers" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="appointments_brokers_FK" Association="Self.appointments_brokers_FK">
+      <End Role="brokers" EntitySet="brokers" />
+      <End Role="appointments" EntitySet="appointments" />
+    </AssociationSet>
+    <AssociationSet Name="appointments_customers0_FK" Association="Self.appointments_customers0_FK">
+      <End Role="customers" EntitySet="customers" />
+      <End Role="appointments" EntitySet="appointments" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

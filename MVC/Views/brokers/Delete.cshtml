@@ -1,0 +1,57 @@
+﻿@model MVC.Models.brokers
+
+@{
+	ViewBag.Title = "Delete";
+}
+
+<h2>Surpmier</h2>
+
+<h3>Êtes-vous sûr de vouloir suprmier ça ?</h3>
+<div>
+	<h4>Courtiers</h4>
+	<hr />
+	<dl class="dl-horizontal">
+		<dt>
+			@Html.DisplayNameFor(model => model.lastname)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.lastname)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.firstname)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.firstname)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.mail)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.mail)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.phoneNumber)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.phoneNumber)
+		</dd>
+
+	</dl>
+
+	@using (Html.BeginForm())
+	{
+		@Html.AntiForgeryToken()
+
+		<div class="form-actions no-color">
+			<input type="submit" value="Suprimer" class="btn btn-default Delete" /> |
+			@Html.ActionLink("Retour à la liste", "Index")
+		</div>
+	}
+</div>
