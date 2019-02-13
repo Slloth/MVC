@@ -18,7 +18,6 @@ namespace MVC.Controllers
 		string regexPhone = @"^[0][0-9]{9}";
 
 		private agendaEntities2 db = new agendaEntities2();
-		private string appointments_brokers_FK;
 
 		// GET: brokers
 		public ActionResult Index()
@@ -124,13 +123,13 @@ namespace MVC.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+				return View("Error");
+			}
             brokers brokers = db.brokers.Find(id);
             if (brokers == null)
             {
-                return HttpNotFound();
-            }
+				return View("PageNotFound");
+			}
             return View(brokers);
         }
 
@@ -212,32 +211,6 @@ namespace MVC.Controllers
 			{
 				return View(brokers);
 			}
-        }
-
-        // GET: brokers/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            brokers brokers = db.brokers.Find(id);
-            if (brokers == null)
-            {
-                return HttpNotFound();
-            }
-            return View(brokers);
-        }
-
-        // POST: brokers/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-			brokers brokers = db.brokers.Find(id);
-            db.brokers.Remove(brokers);
-            db.SaveChanges();
-            return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)

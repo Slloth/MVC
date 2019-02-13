@@ -183,12 +183,16 @@
     <None Include="packages.config" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\brokers\Create.cshtml" />
-    <Content Include="Views\brokers\Delete.cshtml" />
     <Content Include="Views\brokers\Edit.cshtml" />
     <Content Include="Views\brokers\Index.cshtml" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
     <Content Include="Views\Shared\Succes.cshtml" />
     <Content Include="Views\customers\Error.cshtml" />
+    <Content Include="Views\brokers\Error.cshtml" />
+    <Content Include="Views\Home\Error.cshtml" />
+    <Content Include="Views\Home\PageNotFound.cshtml" />
+    <Content Include="Views\customers\PageNotFound.cshtml" />
+    <Content Include="Views\brokers\PageNotFound.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

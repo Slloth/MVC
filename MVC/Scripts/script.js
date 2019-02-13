@@ -3,4 +3,4 @@
 	if (!result) {
 		e.preventDefault();
 	}
-}); 
+});

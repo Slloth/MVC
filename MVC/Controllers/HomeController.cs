@@ -18,8 +18,8 @@ namespace MVC.Controllers
 
 		// GET: Home
 		public ActionResult Index()
-        {
-            var appointments = db.appointments.Include(a => a.brokers).Include(a => a.customers);
+		{
+			var appointments = db.appointments.Include(a => a.brokers).Include(a => a.customers);
             return View(appointments.ToList());
         }
 
@@ -62,16 +62,16 @@ namespace MVC.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+				return View("Error");
             }
             appointments appointments = db.appointments.Find(id);
             if (appointments == null)
             {
-                return HttpNotFound();
+				return View("PageNotFoud");
             }
             ViewBag.idBroker = new SelectList(db.brokers, "idBroker", "lastname", appointments.idBroker);
             ViewBag.idCustomer = new SelectList(db.customers, "idCustomer", "lastname", appointments.idCustomer);
-            return View(appointments);
+			return View(appointments);
         }
 
         // POST: Home/Edit/5
@@ -97,12 +97,12 @@ namespace MVC.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return View("Error");
             }
             appointments appointments = db.appointments.Find(id);
             if (appointments == null)
             {
-                return HttpNotFound();
+                return View("PageNotFound");
             }
             return View(appointments);
         }

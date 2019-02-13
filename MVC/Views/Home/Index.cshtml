@@ -17,6 +17,9 @@
 		<th>
 			@Html.DisplayNameFor(model => model.customers.lastname)
 		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.customers.subject)
+		</th>
 	</tr>
 	@foreach (var item in Model)
 	{
@@ -29,6 +32,9 @@
 			</td>
 			<td>
 				@Html.DisplayFor(modelItem => item.customers.lastname)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.customers.subject)
 			</td>
 			<td>
 				@Html.ActionLink("Editer", "Edit", new { id = item.idAppointment }) |

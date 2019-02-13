@@ -1,48 +1,49 @@
 ﻿@model IEnumerable<MVC.Models.brokers>
-<!--permet l'affichage des données correspondants au model choisi-->>
+<!--permet l'affichage des données correspondants au model choisi-->
 @{
-    ViewBag.Title = "Index";
+	ViewBag.Title = "Index";
 }
 
 <h2>Courtiers</h2>
 
 <p>
-    @Html.ActionLink("Ajouter un nouveau Courtier", "Create")
+	@Html.ActionLink("Ajouter un nouveau Courtier", "Create")
 </p>
 <table class="table">
-    <tr>
+	<tr>
 		<th>
 			@Html.DisplayNameFor(model => model.lastname)
 		</th>
-        <th>
-            @Html.DisplayNameFor(model => model.firstname)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.mail)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.phoneNumber)
-        </th>
-    </tr>
+		<th>
+			@Html.DisplayNameFor(model => model.firstname)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.mail)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.phoneNumber)
+		</th>
+	</tr>
 	<!--affichage du tableau-->
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.lastname)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.firstname)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.mail)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.phoneNumber)
-        </td>
-        <td>
-            @Html.ActionLink("Editer", "Edit", new { id=item.idBroker }) |
-            @Html.ActionLink("Supprimer", "Delete", new { id=item.idBroker })
-        </td>
-    </tr>
-}
+	@foreach (var item in Model)
+	{
+		<tr>
+			<td>
+				@Html.DisplayFor(modelItem => item.lastname)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.firstname)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.mail)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.phoneNumber)
+			</td>
+			<td>
+				@Html.ActionLink("Editer", "Edit", new { id = item.idBroker }) |
+				@Html.ActionLink("Ajouter un RDV", "Create", "Home")
+			</td>
+		</tr>
+	}
 </table>

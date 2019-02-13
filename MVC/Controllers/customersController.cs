@@ -16,6 +16,7 @@ namespace MVC.Controllers
 	{
 		//Déclaration des regex
 		string regexName = @"^[A-Za-zéèàêâôûùïüç\-]+$";
+		string regexSubject = @"^[A-Za-zéèàêâôûùïüç '\-]+$";
 		string regexMail = @"[0-9a-zA-Z\.\-]+@[0-9a-zA-Z\.\-]+.[a-zA-Z]{2,4}";
 		string regexPhone = @"^[0][0-9]{9}";
 
@@ -110,7 +111,7 @@ namespace MVC.Controllers
 			if (!String.IsNullOrEmpty(customers.subject)) //si le champ lastname n'est pas vide ou null on vérifie la validité de l'entrée
 			{
 				//Vérification de la validité de l'entrée
-				if (!Regex.IsMatch(customers.subject, regexName)) //si l'entrée utilisateur ne passe pas la regex ajout d'un message d'erreur
+				if (!Regex.IsMatch(customers.subject, regexSubject)) //si l'entrée utilisateur ne passe pas la regex ajout d'un message d'erreur
 				{
 					//Message d'erreur
 					ModelState.AddModelError("subject", "Ecrire un sujet valide");
@@ -140,12 +141,12 @@ namespace MVC.Controllers
 		{
 			if (id == null)
 			{
-				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+				return View("Error");
 			}
 			customers customers = db.customers.Find(id);
 			if (customers == null)
 			{
-				return HttpNotFound();
+				return View("PageNotFound");
 			}
 			return View(customers);
 		}
@@ -221,7 +222,7 @@ namespace MVC.Controllers
 			if (!String.IsNullOrEmpty(customers.subject)) //si le champ lastname n'est pas vide ou null on vérifie la validité de l'entrée
 			{
 				//Vérification de la validité de l'entrée
-				if (!Regex.IsMatch(customers.subject, regexName)) //si l'entrée utilisateur ne passe pas la regex ajout d'un message d'erreur
+				if (!Regex.IsMatch(customers.subject, regexSubject)) //si l'entrée utilisateur ne passe pas la regex ajout d'un message d'erreur
 				{
 					//Message d'erreur
 					ModelState.AddModelError("subject", "Ecrire un sujet valide");
@@ -250,12 +251,12 @@ namespace MVC.Controllers
 		{
 			if (id == null)
 			{
-				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+				return View("Error");
 			}
 			customers customers = db.customers.Find(id);
 			if (customers == null)
 			{
-				return HttpNotFound();
+				return View("PageNotFound");
 			}
 			return View(customers);
 		}
@@ -265,14 +266,17 @@ namespace MVC.Controllers
 		[ValidateAntiForgeryToken]
 		public ActionResult DeleteConfirmed(int id)
 		{
-			customers customers = db.customers.Find(id);
-			foreach (var customertry in customers.appointments)
+			if (ModelState.IsValid)
 			{
-				db.customers.Remove(customertry);
+				customers customers = db.customers.Find(id);
+				db.customers.Remove(customers);
+				db.SaveChanges();
+				return RedirectToAction("Index");
 			}
-			db.customers.Remove(customers);
-			db.SaveChanges();
-			return RedirectToAction("Index");
+			else
+			{
+				return View();
+			}
 		}
 
 		protected override void Dispose(bool disposing)

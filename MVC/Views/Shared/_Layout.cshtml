@@ -22,13 +22,22 @@
 					@Html.ActionLink("Rendez-vous", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
 				</li>
 				<li>
+					@Html.ActionLink("Ajouter un rendez-vous", "Create", "Home", new { area = "" }, new { @class = "navbar-link" })
+				</li>
+				<li>
 					@Html.ActionLink("Courtier", "Index", "brokers", new { area = "" }, new { @class = "nav-link" })
+				</li>
+				<li>
+					@Html.ActionLink("Ajouter un Courtier", "Create", "brokers", new { area = "" }, new { @class = "nav-link" })
 				</li>
 				<li>
 					@Html.ActionLink("Clients", "Index", "customers", new { area = "" }, new { @class = "nav-link" })
 				</li>
+				<li>
+					@Html.ActionLink("Ajouter un Courtier", "Create", "customers", new { area = "" }, new { @class = "nav-link" })
+				</li>
 			</ul>
-			<span id="test">&copy; @DateTime.Now.Year - Agenda</span>
+			<span id="Copy">&copy; @DateTime.Now.Year - Agenda</span>
 		</div>
 	</div>
 	<div class="container img-rounded">
