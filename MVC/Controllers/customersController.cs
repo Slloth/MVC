@@ -80,11 +80,17 @@ namespace MVC.Controllers
 			//Vérification que le champ mail n'est pas null ou vide
 			if (!String.IsNullOrEmpty(customers.mail))
 			{
+				//Creation de la variable isAlreadyUsed qui permet de verifier qu'un mail n'est pas attribuer a deux client different
+				var isAlreadyUsed = db.customers.Where(cus => cus.mail == customers.mail).SingleOrDefault();
 				//Vérification de la validité de l'entrée
 				if (!Regex.IsMatch(customers.mail, regexMail))
 				{
 					//Message d'erreur
 					ModelState.AddModelError("mail", "Ecrire un mail valide");
+				}
+				else if (isAlreadyUsed != null)
+				{
+					ModelState.AddModelError("Mail", "un client a déjà la même adresse mail");
 				}
 			}
 			else
@@ -191,11 +197,17 @@ namespace MVC.Controllers
 			//Vérification que le champ mail n'est pas null ou vide
 			if (!String.IsNullOrEmpty(customers.mail))
 			{
+				//Creation de la variable isAlreadyUsed qui permet de verifier qu'un mail n'est pas attribuer a deux client different
+				var isAlreadyUsed = db.customers.Where(cus => cus.mail == customers.mail).SingleOrDefault();
 				//Vérification de la validité de l'entrée
 				if (!Regex.IsMatch(customers.mail, regexMail))
 				{
 					//Message d'erreur
 					ModelState.AddModelError("mail", "Ecrire un mail valide");
+				}
+				else if (isAlreadyUsed != null)
+				{
+					ModelState.AddModelError("Mail", "un client a déjà la même adresse mail");
 				}
 			}
 			else
@@ -217,6 +229,11 @@ namespace MVC.Controllers
 			{
 				//Message d'erreur
 				ModelState.AddModelError("phoneNumber", "Ecrire un téléphone");
+			}
+			if(customers.budget <= 0)
+			{
+				//Message d'erreur
+				ModelState.AddModelError("budget", "Le budget doit étre possitif");
 			}
 			//Vérification que le champ lastname n'est pas null ou vide
 			if (!String.IsNullOrEmpty(customers.subject)) //si le champ lastname n'est pas vide ou null on vérifie la validité de l'entrée

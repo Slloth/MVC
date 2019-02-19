@@ -14,7 +14,6 @@ namespace MVC.Controllers
     public class HomeController : Controller
     {
         private agendaEntities2 db = new agendaEntities2();
-		private string dateHour;
 
 		// GET: Home
 		public ActionResult Index()
@@ -30,21 +29,45 @@ namespace MVC.Controllers
 		}
 
         // GET: Home/Create
-        public ActionResult Create()
+        public ActionResult Create(int? id)
         {
-            ViewBag.idBroker = new SelectList(db.brokers, "idBroker", "lastname");
-            ViewBag.idCustomer = new SelectList(db.customers, "idCustomer", "lastname");
-            return View();
+			if(id != null)
+			{
+				ViewBag.idBroker = new SelectList(db.brokers, "idBroker", "lastname");
+				ViewBag.idCustomer = new SelectList(db.customers, "idCustomer", "lastname");
+				var selectedBroker = db.brokers.Find(id);
+				foreach(SelectListItem item in ViewBag.idBroker)
+				{
+					int value = int.Parse(item.Value);
+					if(value == selectedBroker.idBroker)
+					{
+						item.Selected = true;
+					}
+				}
+				return View();
+			}
+			else
+			{
+				ViewBag.idBroker = new SelectList(db.brokers, "idBroker", "lastname");
+				ViewBag.idCustomer = new SelectList(db.customers, "idCustomer", "lastname");
+				return View();
+			}
         }
 
         // POST: Home/Create
-        // Afin de déjouer les attaques par sur-validation, activez les propriétés spécifiques que vous voulez lier. Pour 
-        // plus de détails, voir  https://go.microsoft.com/fwlink/?LinkId=317598.
+        // Afin de déjouer les attaques par sur-validation, activez les propriétés spécifiques que vous voulez lier.
+        // Pour plus de détails, voir  https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "idAppointment,dateHour,idBroker,idCustomer")] appointments appointments)
         {
-
+			ViewBag.idBroker = new SelectList(db.brokers, "idBroker", "LastName", appointments.idBroker);
+			ViewBag.idCustomer = new SelectList(db.customers, "idCustomer", "LastName", appointments.idCustomer);
+			var isAlreadyUsed = db.appointments.Where(x => x.idBroker == appointments.idBroker && x.dateHour == appointments.dateHour || x.idCustomer == appointments.idCustomer && x.dateHour == appointments.dateHour).SingleOrDefault();
+			if (isAlreadyUsed != null)
+			{
+				ModelState.AddModelError("dateHour", "cette plage Horraire possède déjà un Rendez-vous");
+			}
 			if (ModelState.IsValid)
             {
                 db.appointments.Add(appointments);
@@ -81,14 +104,19 @@ namespace MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "idAppointment,dateHour,idBroker,idCustomer")] appointments appointments)
         {
-            if (ModelState.IsValid)
+			ViewBag.idBroker = new SelectList(db.brokers, "idBroker", "lastname", appointments.idBroker);
+			ViewBag.idCustomer = new SelectList(db.customers, "idCustomer", "lastname", appointments.idCustomer);
+			var isAlreadyUsed = db.appointments.Where(x => x.idBroker == appointments.idBroker && x.dateHour == appointments.dateHour || x.idCustomer == appointments.idCustomer && x.dateHour == appointments.dateHour).SingleOrDefault();
+			if (isAlreadyUsed != null)
+			{
+				ModelState.AddModelError("dateHour", "cette plage Horraire possède déjà un Rendez-vous");
+			}
+			if (ModelState.IsValid)
             {
                 db.Entry(appointments).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.idBroker = new SelectList(db.brokers, "idBroker", "lastname", appointments.idBroker);
-            ViewBag.idCustomer = new SelectList(db.customers, "idCustomer", "lastname", appointments.idCustomer);
             return View(appointments);
         }
 
