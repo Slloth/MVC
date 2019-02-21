@@ -16,7 +16,7 @@ namespace MVC.Controllers
 	{
 		//Déclaration des regex
 		string regexName = @"^[A-Za-zéèàêâôûùïüç\-]+$";
-		string regexSubject = @"^[A-Za-zéèàêâôûùïüç '\-]+$";
+		string regexSubject = @"^[A-Z0-9a-zéèàêâôûùïüç '\-]+$";
 		string regexMail = @"[0-9a-zA-Z\.\-]+@[0-9a-zA-Z\.\-]+.[a-zA-Z]{2,4}";
 		string regexPhone = @"^[0][0-9]{9}";
 
@@ -145,10 +145,6 @@ namespace MVC.Controllers
 		// GET: customers/Edit/5
 		public ActionResult Edit(int? id)
 		{
-			if (id == null)
-			{
-				return View("Error");
-			}
 			customers customers = db.customers.Find(id);
 			if (customers == null)
 			{
@@ -197,17 +193,11 @@ namespace MVC.Controllers
 			//Vérification que le champ mail n'est pas null ou vide
 			if (!String.IsNullOrEmpty(customers.mail))
 			{
-				//Creation de la variable isAlreadyUsed qui permet de verifier qu'un mail n'est pas attribuer a deux client different
-				var isAlreadyUsed = db.customers.Where(cus => cus.mail == customers.mail).SingleOrDefault();
 				//Vérification de la validité de l'entrée
 				if (!Regex.IsMatch(customers.mail, regexMail))
 				{
 					//Message d'erreur
 					ModelState.AddModelError("mail", "Ecrire un mail valide");
-				}
-				else if (isAlreadyUsed != null)
-				{
-					ModelState.AddModelError("Mail", "un client a déjà la même adresse mail");
 				}
 			}
 			else
@@ -283,6 +273,16 @@ namespace MVC.Controllers
 		[ValidateAntiForgeryToken]
 		public ActionResult DeleteConfirmed(int id)
 		{
+			////Permet de DELET ON CASCADE sans modifier la Base de Donnée
+			//if (ModelState.IsValid)
+			//{
+			//	List<appointments> list = db.appointments.Where(d => d.idCustomer == id).ToList();
+			//	db.appointments.RemoveRange(list);
+			//	db.SaveChanges();
+			//	db.customers.Remove(db.customers.Find(id));
+			//	db.SaveChanges();
+			//}
+			//	return RedirectToAction("index");
 			if (ModelState.IsValid)
 			{
 				customers customers = db.customers.Find(id);

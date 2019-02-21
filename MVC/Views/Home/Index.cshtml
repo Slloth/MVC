@@ -2,7 +2,7 @@
 @{
 	ViewBag.Title = "Index";
 }
-<h2>Rendez-vous<span>@DateTime.Today.ToString("dd/MM/yyyy")</span></h2>
+<h2>Rendez-vous<span id="date">@DateTime.Today.ToString("dd/MM/yyyy")</span></h2>
 <p class="btn img-rounded">
 	@Html.ActionLink("Ajouter un Rendez-vous", "Create")
 </p>

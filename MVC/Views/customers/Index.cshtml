@@ -1,62 +1,66 @@
 ﻿@model IEnumerable<MVC.Models.customers>
 
 @{
-    ViewBag.Title = "Index";
+	ViewBag.Title = "Index";
 }
 
 <h2>Clients</h2>
 
 <p>
-    @Html.ActionLink("Ajouter un Client", "Create")
+	@Html.ActionLink("Ajouter un Client", "Create")
 </p>
+<input class="img-rounded" type="text" placeholder="Rechercher un client" id="myInput" />
 <table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.lastname)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.firstname)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.mail)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.phoneNumber)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.budget)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.subject)
-        </th>
-        <th></th>
-    </tr>
-
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.lastname)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.firstname)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.mail)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.phoneNumber)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.budget)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.subject)
-        </td>
-        <td>
-            @Html.ActionLink("Editer", "Edit", new { id=item.idCustomer }) |
-            @Html.ActionLink("Supprimer", "Delete", new { id=item.idCustomer })
-        </td>
-    </tr>
-}
-
+	<thead>
+		<tr>
+			<th>
+				@Html.DisplayNameFor(model => model.lastname)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.firstname)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.mail)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.phoneNumber)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.budget)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.subject)
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody id="myTable">
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => item.lastname)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.firstname)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.mail)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.phoneNumber)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.budget)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.subject)
+				</td>
+				<td>
+					@Html.ActionLink("Editer", "Edit", new { id = item.idCustomer }) |
+					@Html.ActionLink("Supprimer", "Delete", new { id = item.idCustomer })
+				</td>
+			</tr>
+		}
+	</tbody>
 </table>

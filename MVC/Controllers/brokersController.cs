@@ -128,10 +128,6 @@ namespace MVC.Controllers
 		// GET: brokers/Edit/5
 		public ActionResult Edit(int? id)
         {
-            if (id == null)
-            {
-				return View("Error");
-			}
             brokers brokers = db.brokers.Find(id);
             if (brokers == null)
             {
@@ -180,17 +176,11 @@ namespace MVC.Controllers
 			//Vérification que le champ mail n'est pas null ou vide
 			if (!String.IsNullOrEmpty(brokers.mail))
 			{
-				//Creation de la variable isAlreadyUsed qui permet de verifier qu'un mail n'est pas attribuer a deux client different
-				var isAlreadyUsed = db.brokers.Where(cus => cus.mail == brokers.mail).SingleOrDefault();
 				//Vérification de la validité de l'entrée
 				if (!Regex.IsMatch(brokers.mail, regexMail))
 				{
 					//Message d'erreur
 					ModelState.AddModelError("mail", "Ecrire un mail valide");
-				}
-				else if (isAlreadyUsed != null)
-				{
-					ModelState.AddModelError("Mail", "un client a déjà la même adresse mail");
 				}
 			}
 			else

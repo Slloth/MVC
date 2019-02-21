@@ -31,24 +31,15 @@ namespace MVC.Controllers
         // GET: Home/Create
         public ActionResult Create(int? id)
         {
-			if(id != null)
+			if(id == null)
 			{
 				ViewBag.idBroker = new SelectList(db.brokers, "idBroker", "lastname");
 				ViewBag.idCustomer = new SelectList(db.customers, "idCustomer", "lastname");
-				var selectedBroker = db.brokers.Find(id);
-				foreach(SelectListItem item in ViewBag.idBroker)
-				{
-					int value = int.Parse(item.Value);
-					if(value == selectedBroker.idBroker)
-					{
-						item.Selected = true;
-					}
-				}
 				return View();
 			}
 			else
 			{
-				ViewBag.idBroker = new SelectList(db.brokers, "idBroker", "lastname");
+				ViewBag.idBroker = new SelectList(db.brokers, "idBroker", "lastname", id);
 				ViewBag.idCustomer = new SelectList(db.customers, "idCustomer", "lastname");
 				return View();
 			}
@@ -61,12 +52,23 @@ namespace MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "idAppointment,dateHour,idBroker,idCustomer")] appointments appointments)
         {
-			ViewBag.idBroker = new SelectList(db.brokers, "idBroker", "LastName", appointments.idBroker);
-			ViewBag.idCustomer = new SelectList(db.customers, "idCustomer", "LastName", appointments.idCustomer);
-			var isAlreadyUsed = db.appointments.Where(x => x.idBroker == appointments.idBroker && x.dateHour == appointments.dateHour || x.idCustomer == appointments.idCustomer && x.dateHour == appointments.dateHour).SingleOrDefault();
-			if (isAlreadyUsed != null)
+			//var date = Request.Form["startDatepicker"];//Récupération de la date du rdv dans la variable du même nom sous forme de string 
+			//var hour = Request.Form["startTimepicker"];//Récupération de l'heure du rdv dans la variable Hour sous forme de string
+			//var concat = date + " " + hour;//concaténation des 2 variables de sorte à correspondre au format DateTime
+			//appointments.dateHour = Convert.ToDateTime(concat);//attribution de la valeur convertie au format datetime à l'attribut dateHour de l'objet appointmentToAdd
+			//if (string.IsNullOrEmpty(date) || string.IsNullOrEmpty(hour))
+   //         {
+   //             ModelState.AddModelError("dateHour", "heure ou date manquante");
+   //         }
+			var brokerAlreadyUsed = db.appointments.Where(x => x.idBroker == appointments.idBroker && x.dateHour == appointments.dateHour).SingleOrDefault();
+			if (brokerAlreadyUsed != null)
 			{
-				ModelState.AddModelError("dateHour", "cette plage Horraire possède déjà un Rendez-vous");
+				ModelState.AddModelError("dateHour", "Ce courtier possède déjà un rendez-vous à cette date");
+			}
+			var customerAlreadyUsed = db.appointments.Where(x => x.idCustomer == appointments.idCustomer && x.dateHour == appointments.dateHour).SingleOrDefault();
+			if (customerAlreadyUsed != null)
+			{
+				ModelState.AddModelError("dateHour", "Ce client possède déjà un rendez-vous à cette date");
 			}
 			if (ModelState.IsValid)
             {
@@ -90,7 +92,7 @@ namespace MVC.Controllers
             appointments appointments = db.appointments.Find(id);
             if (appointments == null)
             {
-				return View("PageNotFoud");
+				return View("PageNotFound");
             }
             ViewBag.idBroker = new SelectList(db.brokers, "idBroker", "lastname", appointments.idBroker);
             ViewBag.idCustomer = new SelectList(db.customers, "idCustomer", "lastname", appointments.idCustomer);
@@ -123,10 +125,6 @@ namespace MVC.Controllers
         // GET: Home/Delete/5
         public ActionResult Delete(int? id)
         {
-            if (id == null)
-            {
-                return View("Error");
-            }
             appointments appointments = db.appointments.Find(id);
             if (appointments == null)
             {

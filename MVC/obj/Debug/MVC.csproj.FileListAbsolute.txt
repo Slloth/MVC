@@ -78,3 +78,4 @@ C:\Users\Dell\source\repos\MVC\MVC\obj\Debug\MVC.csproj.CoreCompileInputs.cache
 C:\Users\Dell\source\repos\MVC\MVC\obj\Debug\MVC.csproj.CopyComplete
 C:\Users\Dell\source\repos\MVC\MVC\obj\Debug\MVC.dll
 C:\Users\Dell\source\repos\MVC\MVC\obj\Debug\MVC.pdb
+C:\Users\Dell\source\repos\MVC\MVC\bin\fr\EntityFramework.SqlServer.resources.dll

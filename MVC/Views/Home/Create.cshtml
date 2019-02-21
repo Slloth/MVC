@@ -15,18 +15,28 @@
         <h4>Rendez-vous</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.dateHour, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.dateHour, new { htmlAttributes = new { @class = "form-control", placeholder= "jj/MM/yyyy HH:mm" } })
-                @Html.ValidationMessageFor(model => model.dateHour, "", new { @class = "text-danger" })
-            </div>
-        </div>
+		<div class="form-group">
+			@Html.LabelFor(model => model.dateHour, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.EditorFor(model => model.dateHour, new { htmlAttributes = new { @class = "form-control", placeholder = "jj/MM/yyyy HH:mm" } })
+				@Html.ValidationMessageFor(model => model.dateHour, "", new { @class = "text-danger" })
+			</div>
+			@*<div class="input-container">
+			<i class="fa fa-calendar-alt icon"></i>
+			<input type="date" min="2019-01-01" max="2060-01-01" name="startDatepicker" id="startDatepicker" required /> <!--Ne pas oublier de mettre un min=date si on met un max=date, sinon cela génère une erreur lors du savechanges-->
+		</div>
+		<div class="input-container">
+			<i class="fa fa-clock icon"></i>
+			<input type="time" min="09:00" max="18:00" name="startTimepicker" id="startTimepicker" required />
+		</div>
+			@Html.ValidationMessageFor(model => model.dateHour, "", new { @class = "text-danger" })
+			*@
+		</div>
 
         <div class="form-group">
             @Html.LabelFor(model => model.idBroker, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownList("idBroker", null, htmlAttributes: new { @class = "form-control" })
+                @Html.DropDownList("idBroker", null, htmlAttributes: new { @class = "form-control" }, optionLabel: "Choisissez un courtier")
                 @Html.ValidationMessageFor(model => model.idBroker, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -34,7 +44,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.idCustomer, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownList("idCustomer", null, htmlAttributes: new { @class = "form-control" })
+                @Html.DropDownList("idCustomer", null, htmlAttributes: new { @class = "form-control" }, optionLabel: "Choisissez un client")
                 @Html.ValidationMessageFor(model => model.idCustomer, "", new { @class = "text-danger" })
             </div>
         </div>
