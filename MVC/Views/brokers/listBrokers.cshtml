@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<MVC.Models.brokers>
 <!--permet l'affichage des données correspondants au model choisi-->
 @{
-	ViewBag.Title = "Index";
+	ViewBag.Title = "listBrokers";
 }
 
 <h2>Courtiers</h2>
 
 <p>
-	@Html.ActionLink("Ajouter un nouveau Courtier", "Create")
+	@Html.ActionLink("Ajouter un nouveau Courtier", "addBrokers")
 </p>
 <table class="table">
 	<tr>
@@ -42,7 +42,7 @@
 			</td>
 			<td>
 				@Html.ActionLink("Editer", "Edit", new { id = item.idBroker }) |
-				@Html.ActionLink("Ajouter un RDV", "Create", "Home", new { id = item.idBroker}, null)
+				@Html.ActionLink("Ajouter un RDV", "addBrokers", "appointements", new { id = item.idBroker}, null)
 			</td>
 		</tr>
 	}

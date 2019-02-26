@@ -132,20 +132,20 @@
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\script.js" />
     <Content Include="Web.config" />
-    <Content Include="Views\Home\Create.cshtml" />
-    <Content Include="Views\Home\Delete.cshtml" />
-    <Content Include="Views\Home\Edit.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\customers\Create.cshtml" />
+    <Content Include="Views\appointements\addAppointements.cshtml" />
+    <Content Include="Views\appointements\Delete.cshtml" />
+    <Content Include="Views\appointements\Edit.cshtml" />
+    <Content Include="Views\appointements\listAppointements.cshtml" />
+    <Content Include="Views\customers\addCustomers.cshtml" />
     <Content Include="Views\customers\Delete.cshtml" />
     <Content Include="Views\customers\Edit.cshtml" />
-    <Content Include="Views\customers\Index.cshtml" />
+    <Content Include="Views\customers\listCustomers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\brokersController.cs" />
     <Compile Include="Controllers\customersController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\appointementsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -186,13 +186,14 @@
     </Content>
     <None Include="packages.config" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\brokers\Create.cshtml" />
+    <Content Include="Views\brokers\addBrokers.cshtml" />
     <Content Include="Views\brokers\Edit.cshtml" />
-    <Content Include="Views\brokers\Index.cshtml" />
-    <Content Include="Views\Shared\Succes.cshtml" />
-    <Content Include="Views\Home\PageNotFound.cshtml" />
+    <Content Include="Views\brokers\listBrokers.cshtml" />
+    <Content Include="Views\appointements\PageNotFound.cshtml" />
     <Content Include="Views\customers\PageNotFound.cshtml" />
     <Content Include="Views\brokers\PageNotFound.cshtml" />
+    <Content Include="Views\brokers\Succes.cshtml" />
+    <Content Include="Views\customers\Succes.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

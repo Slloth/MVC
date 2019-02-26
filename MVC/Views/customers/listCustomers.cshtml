@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<MVC.Models.customers>
 
 @{
-	ViewBag.Title = "Index";
+	ViewBag.Title = "listCustomers";
 }
 
 <h2>Clients</h2>
 
 <p>
-	@Html.ActionLink("Ajouter un Client", "Create")
+	@Html.ActionLink("Ajouter un Client", "addCustomers")
 </p>
 <input class="img-rounded" type="text" placeholder="Rechercher un client" id="myInput" />
 <table class="table">

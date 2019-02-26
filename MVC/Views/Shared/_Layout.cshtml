@@ -19,22 +19,22 @@
 		<div class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
 				<li>
-					@Html.ActionLink("Rendez-vous", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+					@Html.ActionLink("Rendez-vous", "listAppointements", "appointements", new { area = "" }, new { @class = "navbar-brand" })
 				</li>
 				<li>
-					@Html.ActionLink("Ajouter un rendez-vous", "Create", "Home", new { area = "" }, new { @class = "navbar-link" })
+					@Html.ActionLink("Ajouter un rendez-vous", "addAppointements", "appointements", new { area = "" }, new { @class = "navbar-link" })
 				</li>
 				<li>
-					@Html.ActionLink("Courtier", "Index", "brokers", new { area = "" }, new { @class = "nav-link" })
+					@Html.ActionLink("Courtier", "listBrokers", "brokers", new { area = "" }, new { @class = "nav-link" })
 				</li>
 				<li>
-					@Html.ActionLink("Ajouter un Courtier", "Create", "brokers", new { area = "" }, new { @class = "nav-link" })
+					@Html.ActionLink("Ajouter un Courtier", "addBrokers", "brokers", new { area = "" }, new { @class = "nav-link" })
 				</li>
 				<li>
-					@Html.ActionLink("Clients", "Index", "customers", new { area = "" }, new { @class = "nav-link" })
+					@Html.ActionLink("Clients", "listCustomers", "customers", new { area = "" }, new { @class = "nav-link" })
 				</li>
 				<li>
-					@Html.ActionLink("Ajouter un Courtier", "Create", "customers", new { area = "" }, new { @class = "nav-link" })
+					@Html.ActionLink("Ajouter un Courtier", "addCustomers", "customers", new { area = "" }, new { @class = "nav-link" })
 				</li>
 			</ul>
 			<span id="Copy">&copy; @DateTime.Now.Year - Agenda</span>

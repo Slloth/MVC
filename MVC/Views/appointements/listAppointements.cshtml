@@ -1,12 +1,12 @@
 ﻿@model IEnumerable<MVC.Models.appointments>
 @{
-	ViewBag.Title = "Index";
+	ViewBag.Title = "listApointements";
 }
 <h2>Rendez-vous<span id="date">@DateTime.Today.ToString("dd/MM/yyyy")</span></h2>
 <p class="btn img-rounded">
-	@Html.ActionLink("Ajouter un Rendez-vous", "Create")
+	@Html.ActionLink("Ajouter un Rendez-vous", "addAppointements")
 </p>
-<table class="table">
+<table class="table" id="TableIndex">
 	<tr>
 		<th>
 			@Html.DisplayNameFor(model => model.dateHour)

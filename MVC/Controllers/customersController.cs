@@ -23,7 +23,7 @@ namespace MVC.Controllers
 		private agendaEntities2 db = new agendaEntities2();
 
 		// GET: customers
-		public ActionResult Index()
+		public ActionResult listCustomers()
 		{
 			return View(db.customers.ToList());
 		}
@@ -35,7 +35,7 @@ namespace MVC.Controllers
 		}
 
 		// GET: customers/Create
-		public ActionResult Create()
+		public ActionResult addCustomers()
 		{
 			return View();
 		}
@@ -45,13 +45,13 @@ namespace MVC.Controllers
 		// plus de détails, voir  https://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Create([Bind(Include = "idCustomer,lastname,firstname,mail,phoneNumber,budget,subject")] customers customers)
+		public ActionResult addCustomers([Bind(Include = "idCustomer,lastname,firstname,mail,phoneNumber,budget,subject")] customers customerToAdd)
 		{
 			//Vérification que le champ lastname n'est pas null ou vide
-			if (!String.IsNullOrEmpty(customers.lastname)) //si le champ lastname n'est pas vide ou null on vérifie la validité de l'entrée
+			if (!String.IsNullOrEmpty(customerToAdd.lastname)) //si le champ lastname n'est pas vide ou null on vérifie la validité de l'entrée
 			{
 				//Vérification de la validité de l'entrée
-				if (!Regex.IsMatch(customers.lastname, regexName)) //si l'entrée utilisateur ne passe pas la regex ajout d'un message d'erreur
+				if (!Regex.IsMatch(customerToAdd.lastname, regexName)) //si l'entrée utilisateur ne passe pas la regex ajout d'un message d'erreur
 				{
 					//Message d'erreur
 					ModelState.AddModelError("lastname", "Ecrire un nom valide");
@@ -63,10 +63,10 @@ namespace MVC.Controllers
 				ModelState.AddModelError("lastname", "Ecrire un nom");
 			}
 			//Vérification que le champ firstname n'est pas null ou vide
-			if (!String.IsNullOrEmpty(customers.firstname))
+			if (!String.IsNullOrEmpty(customerToAdd.firstname))
 			{
 				//Vérification de la validité de l'entrée
-				if (!Regex.IsMatch(customers.firstname, regexName))
+				if (!Regex.IsMatch(customerToAdd.firstname, regexName))
 				{
 					//Message d'erreur
 					ModelState.AddModelError("firstname", "Ecrire un prénom valide");
@@ -78,12 +78,12 @@ namespace MVC.Controllers
 				ModelState.AddModelError("firstname", "Ecrire un prénom");
 			}
 			//Vérification que le champ mail n'est pas null ou vide
-			if (!String.IsNullOrEmpty(customers.mail))
+			if (!String.IsNullOrEmpty(customerToAdd.mail))
 			{
 				//Creation de la variable isAlreadyUsed qui permet de verifier qu'un mail n'est pas attribuer a deux client different
-				var isAlreadyUsed = db.customers.Where(cus => cus.mail == customers.mail).SingleOrDefault();
+				var isAlreadyUsed = db.customers.Where(cus => cus.mail == customerToAdd.mail).SingleOrDefault();
 				//Vérification de la validité de l'entrée
-				if (!Regex.IsMatch(customers.mail, regexMail))
+				if (!Regex.IsMatch(customerToAdd.mail, regexMail))
 				{
 					//Message d'erreur
 					ModelState.AddModelError("mail", "Ecrire un mail valide");
@@ -99,10 +99,10 @@ namespace MVC.Controllers
 				ModelState.AddModelError("mail", "Ecrire un mail");
 			}
 			//Vérification que le champ phoneNumber n'est pas null ou vide
-			if (!String.IsNullOrEmpty(customers.phoneNumber))
+			if (!String.IsNullOrEmpty(customerToAdd.phoneNumber))
 			{
 				//Vérification de la validité de l'entrée
-				if (!Regex.IsMatch(customers.phoneNumber, regexPhone))
+				if (!Regex.IsMatch(customerToAdd.phoneNumber, regexPhone))
 				{
 					//Message d'erreur
 					ModelState.AddModelError("phoneNumber", "Ecrire un téléphone valide");
@@ -114,10 +114,10 @@ namespace MVC.Controllers
 				ModelState.AddModelError("phoneNumber", "Ecrire un téléphone");
 			}
 			//Vérification que le champ lastname n'est pas null ou vide
-			if (!String.IsNullOrEmpty(customers.subject)) //si le champ lastname n'est pas vide ou null on vérifie la validité de l'entrée
+			if (!String.IsNullOrEmpty(customerToAdd.subject)) //si le champ lastname n'est pas vide ou null on vérifie la validité de l'entrée
 			{
 				//Vérification de la validité de l'entrée
-				if (!Regex.IsMatch(customers.subject, regexSubject)) //si l'entrée utilisateur ne passe pas la regex ajout d'un message d'erreur
+				if (!Regex.IsMatch(customerToAdd.subject, regexSubject)) //si l'entrée utilisateur ne passe pas la regex ajout d'un message d'erreur
 				{
 					//Message d'erreur
 					ModelState.AddModelError("subject", "Ecrire un sujet valide");
@@ -132,13 +132,13 @@ namespace MVC.Controllers
 			//Si il n'y a pas d'erreur
 			if (ModelState.IsValid)
 			{
-				db.customers.Add(customers);
+				db.customers.Add(customerToAdd);
 				db.SaveChanges();
 				return RedirectToAction("Succes");
 			}
 			else
 			{
-				return View(customers);
+				return View(customerToAdd);
 			}
 		}
 
@@ -288,7 +288,7 @@ namespace MVC.Controllers
 				customers customers = db.customers.Find(id);
 				db.customers.Remove(customers);
 				db.SaveChanges();
-				return RedirectToAction("Index");
+				return RedirectToAction("listCustomers");
 			}
 			else
 			{

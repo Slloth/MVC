@@ -1,7 +1,7 @@
 ﻿@model MVC.Models.appointments
 
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = "addAppointemetns";
 }
 
 <h2>Ajouter un Rendez-vous</h2>
@@ -18,19 +18,16 @@
 		<div class="form-group">
 			@Html.LabelFor(model => model.dateHour, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10">
-				@Html.EditorFor(model => model.dateHour, new { htmlAttributes = new { @class = "form-control", placeholder = "jj/MM/yyyy HH:mm" } })
+				<div class="input-container">
+					<i class="fa fa-calendar-alt icon"></i>
+					<input type="date" min="2019-01-01" max="2060-01-01" name="startDatepicker" id="startDatepicker" required /> <!--Ne pas oublier de mettre un min=date si on met un max=date, sinon cela génère une erreur lors du savechanges-->
+				</div>
+				<div class="input-container">
+					<i class="fa fa-clock icon"></i>
+					<input type="time" min="09:00" max="18:00" name="startTimepicker" id="startTimepicker" required />
+				</div>
 				@Html.ValidationMessageFor(model => model.dateHour, "", new { @class = "text-danger" })
 			</div>
-			@*<div class="input-container">
-			<i class="fa fa-calendar-alt icon"></i>
-			<input type="date" min="2019-01-01" max="2060-01-01" name="startDatepicker" id="startDatepicker" required /> <!--Ne pas oublier de mettre un min=date si on met un max=date, sinon cela génère une erreur lors du savechanges-->
-		</div>
-		<div class="input-container">
-			<i class="fa fa-clock icon"></i>
-			<input type="time" min="09:00" max="18:00" name="startTimepicker" id="startTimepicker" required />
-		</div>
-			@Html.ValidationMessageFor(model => model.dateHour, "", new { @class = "text-danger" })
-			*@
 		</div>
 
         <div class="form-group">
@@ -58,5 +55,5 @@
 }
 
 <div>
-    @Html.ActionLink("Retour à la liste", "Index")
+    @Html.ActionLink("Retour à la liste", "listAppointements")
 </div>
