@@ -16,4 +16,10 @@ abstract class AbstractController{
         require_once(ROOT.'templates/'.strtolower(str_replace('Controller','',get_class($this))).'/'. $ficher.'.php');
     }
 
+    public function renderError(string $ficher, array $options = []){
+        // Récupère les valeurs du tableau pour en faire des variables à part entière
+        extract($options);
+        require_once(ROOT.'templates/errors/'. $ficher.'.php');
+    }
+
 }
