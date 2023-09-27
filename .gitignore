@@ -2,3 +2,4 @@
 src/Controller/*
 src/Model/*
 Templates/*
+!Templates/errors
