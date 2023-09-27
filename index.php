@@ -19,10 +19,8 @@ if(!$params[0]){
     route("home");
 }
 else{
-    
     // Si le paramètre action est définie alors on modifier le paramètre action sinon on laisse par défaut
     isset($params[1]) && $params[1] != "index" ?  route($params[0],$params[1]) : route($params[0]);
-    
 }
 
 
