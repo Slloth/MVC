@@ -1,1 +1,4 @@
 .env.local
+src/Controller/*
+src/Model/*
+Templates/*
