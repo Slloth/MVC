@@ -9,7 +9,6 @@ abstract class AbstractModel{
     private $db_port;
 
     private $table;
-    private $id;
 
     //connexion string
     protected $_connexion;
@@ -38,11 +37,6 @@ abstract class AbstractModel{
         $this->table = $table;
     }
 
-    
-    public function setId(string $id):void{
-        $this->id = $id;
-    }
-
     // Requête pour récupèrer toutes les lignes d'une table
     public function getAll(){
         $sql = "SELECT * FROM ". $this->table;
@@ -54,12 +48,12 @@ abstract class AbstractModel{
     }
 
     // Requête pour récupèrer une ligne d'une table
-    public function getOne(){
-        $sql = "SELECT * FROM ". $this->table . "WHERE id =" .$this->id;
+    public function getOne(int $id){
+        $sql = "SELECT * FROM ". $this->table . " WHERE id =" .$id;
         $query = $this->_connexion->prepare($sql);
         $query->execute();
         $result = $query->get_result();
         $this->_connexion->close();
-        return $result->fetch_one();
+        return $result->fetch_assoc();
     }
 }
