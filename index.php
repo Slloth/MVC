@@ -20,20 +20,23 @@ if(!$params[0]){
 }
 else{
     
-    $controller = $params[0];
     // Si le paramètre action est définie alors on modifier le paramètre action sinon on laisse par défaut
-    isset($params[1]) ?  route($controller,$params[1]) : route($controller);
+    isset($params[1]) && $params[1] != "index" ?  route($params[0],$params[1]) : route($params[0]);
     
 }
 
+
 function route(string $controller, string $action = "index"):void{
-    $controller = $controller."Controller";
+    global $params;
     $controller = ucfirst($controller);
+    $controller = $controller."Controller";
     require_once(ROOT.'src/Controller/'.$controller.'.php');
     $controller = new $controller();
     if(method_exists($controller,$action)){
         http_response_code(200);
-        $controller->$action();
+        unset($params[0]);
+        unset($params[1]);
+        call_user_func_array([$controller,$action],$params);
     } else{
         http_response_code(404);
         echo "La page demandée n'existe pas!";
