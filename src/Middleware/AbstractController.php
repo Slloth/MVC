@@ -8,6 +8,7 @@ abstract class AbstractController{
         require_once(ROOT.'src/Model/'.$model.'.php');
         $this->$model = new $model();
     }
+    
     public function render(string $ficher, array $options = []){
         $controllerPath = ROOT.'templates/'.strtolower(str_replace('Controller','',get_class($this))).'/'. $ficher.'.php';
         $this->renderBase($controllerPath,$options);
