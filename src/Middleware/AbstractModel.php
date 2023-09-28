@@ -36,24 +36,60 @@ abstract class AbstractModel{
     public function setTable(string $table):void{
         $this->table = $table;
     }
+    
+    public function getTable():string{
+        return $this->table;
+    }
 
     // Requête pour récupèrer toutes les lignes d'une table
-    public function getAll(){
-        $sql = "SELECT * FROM ". $this->table;
-        $query = $this->_connexion->prepare($sql);
-        $query->execute();
-        $result = $query->get_result();
+    public function findAll(){
+        $sql = "SELECT * FROM ".$this->table;
+        $stmt = $this->_connexion->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
         $this->_connexion->close();
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     // Requête pour récupèrer une ligne d'une table
-    public function getOne(int $id){
-        $sql = "SELECT * FROM ". $this->table . " WHERE id =" .$id;
-        $query = $this->_connexion->prepare($sql);
-        $query->execute();
-        $result = $query->get_result();
-        $this->_connexion->close();
-        return $result->fetch_assoc();
+    public function find(int $id){
+        $sql = "SELECT * FROM ". $this->table . " WHERE id = ?;";
+        return $this->_connexion->execute_query($sql, [$id])->fetch_assoc();
     }
+
+    // Récupère une ligne par rapport aux critères précisé 
+    public function findOneBy(array $criteria):?array{
+        $result = $this->createQuery($criteria);
+        return $this->_connexion->execute_query($result[0],$result[1])->fetch_assoc();
+    }
+
+    // Récupère toutes lignes par rapport aux critères précisé 
+    public function findBy(array $criteria):array{
+        $result = $this->createQuery($criteria);
+        return $this->_connexion->execute_query($result[0],$result[1])->fetch_all(MYSQLI_ASSOC);
+    }
+
+    
+    private function createQuery(array $criteria, array $orderBy = null):array{
+        $conditionString = "";
+        $conditionsValues = array();
+        $index = 0;
+        foreach ($criteria as $key => $value){
+            if($index !== 0){
+                $conditionString .= " AND ";
+            }
+            $conditionString .= $key . " = ? ";
+            array_push($conditionsValues,$value);
+            $index++;
+        }
+        if($orderBy !== NULL){
+            $columnName = array_keys($orderBy)[0];
+            array_push($conditionsValues,array_values($orderBy)[0]);
+            $conditionString .= "ORDER BY ".$columnName. " = ?"; 
+        }
+        $conditionString .= ";";
+        $sql = "SELECT * FROM ". $this->table . " WHERE ". $conditionString;
+        return array($sql,$conditionsValues);
+    }
+    
 }
