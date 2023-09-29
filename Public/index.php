@@ -1,7 +1,13 @@
 <?php
 
 //On charge les variables d'environemments
-// DotEnvEnvironment::load();
+
+use Core\Autoloader;
+use Core\DotEnvEnvironment;
+
+require_once "../autoloader.php";
+Autoloader::register();
+DotEnvEnvironment::load();
 
 // // On sépare les params
 // $params = explode('/',$_GET["p"]);
