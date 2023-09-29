@@ -41,40 +41,71 @@ abstract class AbstractModel{
         return $this->table;
     }
 
-    // Requête pour récupèrer toutes les lignes d'une table
-    public function findAll(){
-        $sql = "SELECT * FROM ".$this->table;
-        $stmt = $this->_connexion->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $this->_connexion->close();
-        return $result->fetch_all(MYSQLI_ASSOC);
+    /**
+     * Requête pour récupèrer toutes les lignes d'une table
+     *
+     * @return object[]
+     */
+    public function findAll():array{
+        $stmt = $this->createQueryBuilder([]);
+        $results = [];
+        while($obj = $stmt->fetch_object())
+        {
+            array_push($results,$obj);
+        }
+        return $results;
     }
 
-    // Requête pour récupèrer une ligne d'une table
-    public function find(int $id){
-        $sql = "SELECT * FROM ". $this->table . " WHERE id = ?;";
-        return $this->_connexion->execute_query($sql, [$id])->fetch_assoc();
+    /**
+     * Requête pour récupèrer une ligne d'une table via son id
+     *
+     * @param integer $id
+     * @return object|null
+     */
+    public function find(int $id):?object{
+        $stmt = $this->createQueryBuilder(["id" => $id]);
+        return $stmt->fetch_object();
     }
 
-    // Récupère une ligne par rapport aux critères précisé 
-    public function findOneBy(array $criteria):?array{
-        $result = $this->createQuery($criteria);
-        return $this->_connexion->execute_query($result[0],$result[1])->fetch_assoc();
+    /**
+     * Récupère une ligne par rapport aux critères précisés
+     * 
+     * @param array{'key':'value'} $criteria
+     * @param array{'key':'value'}|NULL $orderBy
+     * 
+     * @return object|null
+    */ 
+    public function findOneBy(array $criteria,array $orderBy = null):?object{
+        $stmt = $this->createQueryBuilder($criteria,$orderBy);
+        return $stmt->fetch_object();
     }
 
-    // Récupère toutes lignes par rapport aux critères précisé 
-    public function findBy(array $criteria):array{
-        $result = $this->createQuery($criteria);
-        return $this->_connexion->execute_query($result[0],$result[1])->fetch_all(MYSQLI_ASSOC);
+    /**
+     * Récupère toutes lignes par rapport aux critères précisés
+     *
+     * @param array{'key':'value' $criteria
+     * @param array{'key':'value'}|NULL $orderBy
+     * @return object[]
+     */ 
+    public function findBy(array $criteria,array $orderBy = null):array{
+        $stmt = $this->createQueryBuilder($criteria,$orderBy);
+        $results=[];
+        while($obj = $stmt->fetch_object()){
+            var_dump($obj);
+            array_push($results,$obj);
+        }
+        return $results;
     }
 
     
-    private function createQuery(array $criteria, array $orderBy = null):array{
+    private function createQueryBuilder(array $criteria, array $orderBy = null):mysqli_result|bool{
         $conditionString = "";
         $conditionsValues = array();
         $index = 0;
         foreach ($criteria as $key => $value){
+            if($index === 0){
+                $conditionString .= " WHERE ";
+            }
             if($index !== 0){
                 $conditionString .= " AND ";
             }
@@ -88,8 +119,10 @@ abstract class AbstractModel{
             $conditionString .= "ORDER BY ".$columnName. " = ?"; 
         }
         $conditionString .= ";";
-        $sql = "SELECT * FROM ". $this->table . " WHERE ". $conditionString;
-        return array($sql,$conditionsValues);
+        $sql = "SELECT * FROM ". $this->table . $conditionString;
+        $stmt = $this->_connexion->execute_query($sql,$conditionsValues);
+        $this->_connexion->close();
+        return $stmt;
     }
     
 }
