@@ -3,7 +3,7 @@
 class DotEnvEnvironment
 {
 
-   public function load($path): void
+   public static function load($path): void
    {
         
        $lines = file_exists($path.'/.env.local') ? file($path . '/.env.local'): file($path . '/.env');
