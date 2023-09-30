@@ -98,7 +98,42 @@ abstract class AbstractModel extends Db{
 
         $this->executePreparedQuery($sql,$values);       // Condition térnaire si la variable $criteria et définie.
     }
-    
+
+    /**
+     * Update database
+     *
+     * @param integer $id
+     * @return void
+     */
+    public function update(int $id): void{
+        $sql = "";
+        
+        // Si le tableau de critères est non null et remplie.
+        $fields = [];
+        $values = [];
+
+        $sql .= " SET ";
+        
+        // On ajoute au tableau de clées " = ?" qui von être remplacé par les attributs à l'execution de la requête.
+        foreach ($this as $field => $value){
+            if($field !== NULL && $field !== 'table' && $field !== 'db'){
+                $fields[] = "$field = ?";
+                $values[] = $value;
+            }
+        }
+
+        // On implode le tableau de clées en une chaine de caractères avec " AND " entre chaque clée.
+        $sql .= implode(", ",$fields);
+        $sql .= " WHERE id = ?";
+        $values[] = $id;
+        // On fini la requête et on y ajoute devant le début de la requête
+        $sql .= ";";
+        $sql = "UPDATE ". $this->table . $sql;
+
+        $this->executePreparedQuery($sql,$values);       // Condition térnaire si la variable $criteria et définie.
+    }
+
+
     /**
      * Execute la requête créer préparer si il y'a des attributs.  Sinon execute simplement la requête 
      *
