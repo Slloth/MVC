@@ -1,8 +1,2 @@
 .env.local
-src/Controller/*
-!src/Controller/HomeController.php
-src/Model/*
-Templates/*
-!Templates/errors
-!Templates/layouts
-!Templates/home/
+App/*
