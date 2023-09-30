@@ -29,8 +29,8 @@ abstract class AbstractRepository{
      * @return array
      */
     public function findAll(array $orderBy = NULL):array{
-        $preparedQuery = $this->model->readQueryBuilder(NULL,$orderBy);
-        return $this->model->executePreparedQuery($preparedQuery[0],$preparedQuery[1])-> fetchAll();
+        return $this->model->select(NULL,$orderBy)->fetchAll();
+       
     }
 
     /**
@@ -40,8 +40,7 @@ abstract class AbstractRepository{
      * @return object|FALSE
      */
     public function find(int $id):object|FALSE{
-        $preparedQuery = $this->model->readQueryBuilder(["id" => $id]);
-        return $this->model->executePreparedQuery($preparedQuery[0],$preparedQuery[1])->fetch();
+        return$this->model->select(["id" => $id])->fetch();
     }
 
     /**
@@ -53,8 +52,7 @@ abstract class AbstractRepository{
      * @return object|FALSE
     */ 
     public function findOneBy(array $criteria,array $orderBy = NULL):object|FALSE{
-        $preparedQuery = $this->model->readQueryBuilder($criteria,$orderBy);
-        return $this->model->executePreparedQuery($preparedQuery[0],$preparedQuery[1])->fetch();
+        return $this->model->select($criteria,$orderBy)->fetch();
     }
 
     /**
@@ -65,8 +63,7 @@ abstract class AbstractRepository{
      * @return object[]
      */ 
     public function findBy(array $criteria,array $orderBy = NULL):array{
-        $preparedQuery = $this->model->readQueryBuilder($criteria,$orderBy);
-        return $this->model->executePreparedQuery($preparedQuery[0],$preparedQuery[1])->fetchAll();
+        return $this->model->select($criteria,$orderBy)->fetchAll();
     }
 
 }

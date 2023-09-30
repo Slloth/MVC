@@ -7,10 +7,10 @@ use PDOStatement;
 
 abstract class AbstractModel extends Db{
 
-    public string $table;
+    protected string $table;
 
     private Db $db;
-   
+
 
     /**
      * Execute la partie Read du CRUD
@@ -23,9 +23,9 @@ abstract class AbstractModel extends Db{
      *
      * @param array|NULL $criterias
      * @param array|NULL $orderBy
-     * @return array
+     * @return PDOStatement|FALSE
      */
-    public function readQueryBuilder(?array $criterias = NULL, ?array $orderBy = NULL):array{
+    public function select(?array $criterias = NULL, ?array $orderBy = NULL):PDOStatement|FALSE{
         $sql = "";
         
         // Si le tableau de critères est non null et remplie.
@@ -57,7 +57,44 @@ abstract class AbstractModel extends Db{
         $sql .= ";";
         $sql = "SELECT * FROM ". $this->table . $sql;
 
-        return [$sql,isset($criteriaValues) ? $criteriaValues : NULL];       // Condition térnaire si la variable $criteria et définie.
+        return $this->executePreparedQuery($sql,isset($criteriaValues) ? $criteriaValues : NULL);       // Condition térnaire si la variable $criteria et définie.
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @return PDOStatement|FALSE
+     */
+    public function insert():PDOStatement|FALSE{
+        $sql = "";
+        
+        // Si le tableau de critères est non null et remplie.
+        $fields = [];
+        $inters = [];
+        $values = [];
+        
+        // On ajoute au tableau de clées " = ?" qui von être remplacé par les attributs à l'execution de la requête.
+        foreach ($this as $field => $value){
+            if($field !== NULL && $field !== 'table'){
+                $fields[] = $field;
+                $inters[] = "?";
+                $values[] = $value;
+            }
+        }
+
+        // On implode le tableau de clées en une chaine de caractères avec " AND " entre chaque clée.
+        $sql .= " (";
+        $sql .= implode(", ",$fields);
+        $sql .= ")";
+        $sql .= " VALUES (";
+        $sql .= implode(", ",$inters);
+        $sql .= ")";
+        
+        // On fini la requête et on y ajoute devant le début de la requête
+        $sql .= ";";
+        $sql = "INSERT INTO ". $this->table . $sql;
+
+        return $this->executePreparedQuery($sql,$values);       // Condition térnaire si la variable $criteria et définie.
     }
     
     /**
@@ -67,7 +104,7 @@ abstract class AbstractModel extends Db{
      * @param array<string>|NULL $attr
      * @return PDOStatement|FALSE
      */
-    public function executePreparedQuery(string $sql, array $attr=NULL):PDOStatement|FALSE{
+    private function executePreparedQuery(string $sql, array $attr=NULL):PDOStatement|FALSE{
         $this->db = Db::getInstance();
 
         if($attr !== NULL){
