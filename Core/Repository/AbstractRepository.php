@@ -30,7 +30,6 @@ abstract class AbstractRepository{
      */
     public function findAll(array $orderBy = NULL):array{
         $preparedQuery = $this->model->readQueryBuilder(NULL,$orderBy);
-        var_dump($preparedQuery[0]);
         return $this->model->executePreparedQuery($preparedQuery[0],$preparedQuery[1])-> fetchAll();
     }
 
