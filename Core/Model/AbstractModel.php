@@ -10,8 +10,10 @@ abstract class AbstractModel extends Db{
     protected string $table;
 
     private Db $db;
+   
 
-
+    
+    
     /**
      * Execute la partie Read du CRUD
      * 
@@ -61,11 +63,11 @@ abstract class AbstractModel extends Db{
     }
 
     /**
-     * Undocumented function
+     * Insert into database
      *
-     * @return PDOStatement|FALSE
+     * @return void
      */
-    public function insert():PDOStatement|FALSE{
+    public function insert(): void{
         $sql = "";
         
         // Si le tableau de critères est non null et remplie.
@@ -75,7 +77,7 @@ abstract class AbstractModel extends Db{
         
         // On ajoute au tableau de clées " = ?" qui von être remplacé par les attributs à l'execution de la requête.
         foreach ($this as $field => $value){
-            if($field !== NULL && $field !== 'table'){
+            if($field !== NULL && $field !== 'table' && $field !== 'db'){
                 $fields[] = $field;
                 $inters[] = "?";
                 $values[] = $value;
@@ -94,7 +96,7 @@ abstract class AbstractModel extends Db{
         $sql .= ";";
         $sql = "INSERT INTO ". $this->table . $sql;
 
-        return $this->executePreparedQuery($sql,$values);       // Condition térnaire si la variable $criteria et définie.
+        $this->executePreparedQuery($sql,$values);       // Condition térnaire si la variable $criteria et définie.
     }
     
     /**
@@ -114,5 +116,18 @@ abstract class AbstractModel extends Db{
         }else{
             return $this->db->query($sql);
         } 
+    }
+    /**
+     * 
+     *
+     * @param array $data
+     * @return self
+     */
+    public function hydrate(array $data):self{
+        foreach($data as $key => $value){
+            $setter = "set". ucfirst($key);
+            method_exists($this,$setter) ? $this->$setter($value) : null;
+        }
+        return $this;
     }
 }
