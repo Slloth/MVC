@@ -2,12 +2,21 @@
 
 //On charge les variables d'environemments
 
+use App\Models\Article;
+use App\Repositories\ArticleRepository;
 use Core\Autoloader;
+use Core\Db\Db;
 use Core\DotEnvEnvironment;
 
 require_once "../autoloader.php";
 Autoloader::register();
 DotEnvEnvironment::dotEnvLoad();
+
+$articleRepo = new ArticleRepository();
+// $articles = $articleRepo->findBy(["name" => "Mon Super"],["id" => 'DESC']);
+$articles = $articleRepo->findAll(["id"=>"DESC"]);
+// $article = $articleRepo->find(2);
+var_dump($articles!=FALSE ? $articles : "Aucune ressource trouvé");
 
 // // On sépare les params
 // $params = explode('/',$_GET["p"]);
