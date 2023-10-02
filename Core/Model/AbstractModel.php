@@ -65,9 +65,9 @@ abstract class AbstractModel extends Db{
     /**
      * Insert into database
      *
-     * @return void
+     * @return PDOStatement|FALSE
      */
-    public function insert(): void{
+    public function insert():PDOStatement|FALSE{
         $sql = "";
         
         // Si le tableau de critères est non null et remplie.
@@ -96,16 +96,16 @@ abstract class AbstractModel extends Db{
         $sql .= ";";
         $sql = "INSERT INTO ". $this->table . $sql;
 
-        $this->executePreparedQuery($sql,$values);       // Condition térnaire si la variable $criteria et définie.
+        return $this->executePreparedQuery($sql,$values);       // Condition térnaire si la variable $criteria et définie.
     }
 
     /**
      * Update database
      *
      * @param integer $id
-     * @return void
+     * @return PDOStatement|FALSE
      */
-    public function update(int $id): void{
+    public function update(int $id): PDOStatement|FALSE{
         $sql = "";
         
         // Si le tableau de critères est non null et remplie.
@@ -130,9 +130,22 @@ abstract class AbstractModel extends Db{
         $sql .= ";";
         $sql = "UPDATE ". $this->table . $sql;
 
-        $this->executePreparedQuery($sql,$values);       // Condition térnaire si la variable $criteria et définie.
+        return $this->executePreparedQuery($sql,$values);       // Condition térnaire si la variable $criteria et définie.
     }
 
+    
+     /**
+     * delete database
+     *
+     * @param integer $id
+     * @return PDOStatement|FALSE
+     */
+    public function delete(int $id): PDOStatement|FALSE{
+
+        $sql = "DELETE FROM ". $this->table . " WHERE id = ?";
+
+        return $this->executePreparedQuery($sql,[$id]);       // Condition térnaire si la variable $criteria et définie.
+    }
 
     /**
      * Execute la requête créer préparer si il y'a des attributs.  Sinon execute simplement la requête 
@@ -141,16 +154,15 @@ abstract class AbstractModel extends Db{
      * @param array<string>|NULL $attr
      * @return PDOStatement|FALSE
      */
-    private function executePreparedQuery(string $sql, array $attr=NULL):PDOStatement|FALSE{
+    private function executePreparedQuery(string $sql, ?array $attr=NULL):PDOStatement|FALSE{
         $this->db = Db::getInstance();
-
         if($attr !== NULL){
             $query = $this->db->prepare($sql);
             $query->execute($attr);
             return $query;
         }else{
             return $this->db->query($sql);
-        } 
+        }
     }
     /**
      * 
