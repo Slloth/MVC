@@ -2,8 +2,6 @@
 
 namespace Core\Repository;
 
-use Core\model\Abstractmodel;
-
 /**
  * Permet d'obtenir les 4 requêtes par défaut
  * * findAll(["colonne"=> {"ASC" || "DESC"} ] = NULL);
@@ -16,9 +14,9 @@ abstract class AbstractRepository{
     /**
      * Le model lié au Repository
      *
-     * @param Abstractmodel $model
+     * @param $model
      */
-    public function __construct(private Abstractmodel $model)
+    public function __construct(private $model)
     {
     }
      
@@ -26,21 +24,25 @@ abstract class AbstractRepository{
      * Requête pour récupèrer toutes les lignes d'une table
      *
      * @param array<string>|NULL $orderBy
-     * @return array
+     * @return object[]
      */
     public function findAll(array $orderBy = NULL):array{
-        return $this->model->select(NULL,$orderBy)->fetchAll();
-       
+        $datas = [];
+        while($data = $this->model->select(NULL,$orderBy)->fetchAll()){
+            $model = new $this->model();
+            $model->hydrate($data);
+            $datas[] = $model;
+        }
+       return $datas;
     }
-
     /**
      * Requête pour récupèrer une ligne d'une table via son id
-     *
-     * @param integer $id
-     * @return object|FALSE
      */
-    public function find(int $id):object|FALSE{
-        return$this->model->select(["id" => $id])->fetch();
+    public function find(int $id) {
+        $data = $this->model->select(["id" => $id])->fetch();
+        $model = new $this->model();
+        $model->hydrate($data);
+        return $model;
     }
 
     /**
@@ -49,10 +51,12 @@ abstract class AbstractRepository{
      * @param array<string>:<string> $criteria
      * @param array<string>:<string>|NULL $orderBy
      * 
-     * @return object|FALSE
     */ 
-    public function findOneBy(array $criteria,array $orderBy = NULL):object|FALSE{
-        return $this->model->select($criteria,$orderBy)->fetch();
+    public function findOneBy(array $criteria,array $orderBy = NULL){
+        $data = $this->model->select($criteria,$orderBy)->fetch();
+        $model = new $this->model();
+        $model->hydrate($data);
+        return $model;
     }
 
     /**
@@ -63,7 +67,14 @@ abstract class AbstractRepository{
      * @return object[]
      */ 
     public function findBy(array $criteria,array $orderBy = NULL):array{
-        return $this->model->select($criteria,$orderBy)->fetchAll();
+        $datas = [];
+        while($data = $this->model->select($criteria,$orderBy)->fetchAll()){
+            $model = new $this->model();
+            $model->hydrate($data);
+            $datas[] = $model;
+        }
+       return $datas;
+        
     }
 
 }
