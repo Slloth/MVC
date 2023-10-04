@@ -1,8 +1,8 @@
 .env.local
-src/Controller/*
-!src/Controller/HomeController.php
-src/Model/*
-Templates/*
-!Templates/errors
-!Templates/layouts
-!Templates/home/
+.vscode
+App/Controllers
+App/Models
+App/Repositories
+App/Views/*
+!App/Views/layouts/
+!App/Views/errors/

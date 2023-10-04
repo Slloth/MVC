@@ -1,19 +1,11 @@
 <?php
 
-//Permet a tout les controllers qui en hérite d'avoir les méthodes basiques
-#[AllowDynamicProperties]
-abstract class AbstractController{
+namespace Core\Controller;
 
-    /**
-     * Récupère le nom d'un modèle et le charge dans le controller enfant
-     *
-     * @param class $model
-     * @return void
-     */
-    public function loadModel(string $model){
-        require_once(ROOT.'src/Model/'.$model.'.php');
-        $this->$model = new $model();
-    }
+use AllowDynamicProperties;
+
+//Permet a tout les controllers qui en hérite d'avoir les méthodes basiques
+abstract class AbstractController{
     /**
      * Rend un page
      *
@@ -22,7 +14,9 @@ abstract class AbstractController{
      * @return void
      */
     public function render(string $ficher, array $options = []){
-        $controllerPath = ROOT.'templates/'.strtolower(str_replace('Controller','',get_class($this))).'/'. $ficher.'.php';
+        $controllerPath = str_replace(['Controllers','Controller','App'],'',get_class($this));
+        $controllerPath = str_replace('\\','/',$controllerPath);
+        $controllerPath = ROOT.'App/Views'.strtolower($controllerPath).'/'. $ficher.'.php';
         $this->renderBase($controllerPath,$options);
     }
     
@@ -34,7 +28,8 @@ abstract class AbstractController{
      * @return void
      */
     public function renderError(string $ficher, array $options = []){
-        $controllerPath = ROOT.'templates/errors/'. $ficher.'.php';
+        http_response_code((int) $ficher);
+        $controllerPath = ROOT.'App/Views/errors/'. $ficher.'.php';
         $this->renderBase($controllerPath,$options);
     }
     
@@ -56,7 +51,7 @@ abstract class AbstractController{
         // On récupère les données du buffer et on le clore
         $main = ob_get_clean();
         
-        require_once(ROOT.'Templates/layouts/base.php');
+        require_once(ROOT.'App/Views/layouts/base.php');
         
     }
 }
