@@ -34,7 +34,7 @@ class Main{
 
     private function route(string $controller, string $action = "index"):void{
         $controller = ucfirst($controller); 
-        $controller = "\\App\\Controllers\\".$controller."Controller";
+        $controller = "App\\Controllers\\".$controller."Controller";
         try{
             $controller = new $controller();
         }catch(Error $e){
@@ -47,7 +47,7 @@ class Main{
             call_user_func_array([$controller,$action],$this->params);
         } else{
             http_response_code(404);
-            include_once ROOT.'/App/Views/errors/404.php';
+            include_once ROOT.'App/Views/errors/404.php';
         }
     }
 }
