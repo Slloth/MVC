@@ -22,7 +22,7 @@ class Autoloader{
             require_once $file;
         }else{
             http_response_code(404);
-            include_once ROOT.'App/Views/errors/404.php';
+            require_once ROOT.'App/Views/errors/404.php';
         }
     }
 }

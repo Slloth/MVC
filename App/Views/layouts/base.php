@@ -6,10 +6,10 @@
     <title><?=isset($title)?$title:"Document";?></title>
 </head>
 <body>
-<?php include("_header.php");?>
+<?php require_once "_header.php";?>
 <main>
     <?=$main?>
 </main>
-<?php include("_footer.php");?>
+<?php require_once "_footer.php" ;?>
 </body>
 </html>

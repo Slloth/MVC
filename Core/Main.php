@@ -47,7 +47,7 @@ class Main{
             call_user_func_array([$controller,$action],$this->params);
         } else{
             http_response_code(404);
-            include_once ROOT.'App/Views/errors/404.php';
+            require_once ROOT.'App/Views/errors/404.php';
         }
     }
 }
