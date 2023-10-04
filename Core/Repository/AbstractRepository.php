@@ -28,7 +28,8 @@ abstract class AbstractRepository{
      */
     public function findAll(array $orderBy = NULL):array{
         $datas = [];
-        while($data = $this->model->select(NULL,$orderBy)->fetchAll()){
+        $stmt = $this->model->select(NULL,$orderBy)->fetchAll();
+        foreach($stmt as $data){
             $model = new $this->model();
             $model->hydrate($data);
             $datas[] = $model;
@@ -68,13 +69,13 @@ abstract class AbstractRepository{
      */ 
     public function findBy(array $criteria,array $orderBy = NULL):array{
         $datas = [];
-        while($data = $this->model->select($criteria,$orderBy)->fetchAll()){
+        $stmt = $this->model->select($criteria,$orderBy)->fetchAll();
+        foreach($stmt as $data){
             $model = new $this->model();
             $model->hydrate($data);
             $datas[] = $model;
         }
        return $datas;
-        
     }
 
 }
