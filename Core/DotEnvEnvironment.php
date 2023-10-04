@@ -5,7 +5,7 @@ namespace Core;
 class DotEnvEnvironment
 {
 
-   public static function load($path = __DIR__."/.."): void  
+   public static function dotEnvLoad($path = __DIR__."/.."): void  
    {
         $lines = file_exists($path.'/.env.local') ? file($path . '/.env.local'): file($path . '/.env');
         foreach ($lines as $line) {

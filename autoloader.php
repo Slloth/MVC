@@ -17,7 +17,12 @@ class Autoloader{
      */
     static private function autoload(string $class){
         $class = str_replace('\\',DIRECTORY_SEPARATOR,$class);
-        $file = __DIR__.'/'.$class.'.php';
-        file_exists($file) ? require_once $file : null ;
+        $file = ROOT.$class.'.php';
+        if(file_exists($file)){
+            require_once $file;
+        }else{
+            http_response_code(404);
+            require_once ROOT.'App/Views/errors/404.php';
+        }
     }
 }
