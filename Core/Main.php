@@ -26,9 +26,12 @@ class Main{
         if(empty($this->params[0])){
             $this->route("home");
         }
-        else{
+        elseif($this->params[0] != "assets"){
             // Si le paramètre action est définie alors on modifier le paramètre action sinon on laisse par défaut
             isset($this->params[1]) && $this->params[1] != "index" ?  $this->route($this->params[0],$this->params[1]) : $this->route($this->params[0]);
+        }
+        else{
+            require_once ROOT.'Public'.$_SERVER["REQUEST_URI"];
         }
     }
 
