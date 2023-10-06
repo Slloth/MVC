@@ -46,7 +46,6 @@ Puis la faire etendre d'[AbstractModel](Core/Model/AbstractModel.php) et integre
 Enfin créer autant d'Attributs dans votre class que de colonne dans votre table, puis créer les Getters & Setters et pour fini le constructeur.
 ````php
     public function __construct(){
-        parent::__construct();
         $this->table = "nomDeLaTable";
     }
 ````
