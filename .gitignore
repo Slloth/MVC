@@ -1,8 +1,2 @@
 .env.local
 .vscode
-App/Controllers
-App/Models
-App/Repositories
-App/Views/*
-!App/Views/layouts/
-!App/Views/errors/
