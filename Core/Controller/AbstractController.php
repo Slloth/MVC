@@ -1,23 +1,45 @@
 <?php
 
+namespace Core\Controller;
+
+use AllowDynamicProperties;
+
 //Permet a tout les controllers qui en hérite d'avoir les méthodes basiques
-#[AllowDynamicProperties]
 abstract class AbstractController{
-    public function loadModel(string $model){
-        //Récupère le nom d'un modèle et le charge dans le controller enfant
-        require_once(ROOT.'src/Model/'.$model.'.php');
-        $this->$model = new $model();
-    }
+    /**
+     * Rend un page
+     *
+     * @param string $ficher
+     * @param array $options
+     * @return void
+     */
     public function render(string $ficher, array $options = []){
-        $controllerPath = ROOT.'templates/'.strtolower(str_replace('Controller','',get_class($this))).'/'. $ficher.'.php';
+        $controllerPath = str_replace(['Controllers','Controller','App'],'',get_class($this));
+        $controllerPath = str_replace('\\','/',$controllerPath);
+        $controllerPath = ROOT.'App/Views'.strtolower($controllerPath).'/'. $ficher.'.php';
         $this->renderBase($controllerPath,$options);
     }
     
+    /**
+     * Rend une page erreur
+     *
+     * @param string $ficher
+     * @param array $options
+     * @return void
+     */
     public function renderError(string $ficher, array $options = []){
-        $controllerPath = ROOT.'templates/errors/'. $ficher.'.php';
+        http_response_code((int) $ficher);
+        $controllerPath = ROOT.'App/Views/errors/'. $ficher.'.php';
         $this->renderBase($controllerPath,$options);
     }
     
+    /**
+     * Undocumented function
+     *
+     * @param string $controllerPath
+     * @param array $options
+     * @return void
+     */
     private function renderBase(string $controllerPath, array $options = [])
     {
         // Récupère les valeurs du tableau pour en faire des variables à part entière
@@ -29,7 +51,7 @@ abstract class AbstractController{
         // On récupère les données du buffer et on le clore
         $main = ob_get_clean();
         
-        require_once(ROOT.'Templates/layouts/base.php');
+        require_once(ROOT.'App/Views/layouts/base.php');
         
     }
 }
