@@ -30,8 +30,12 @@ class Main{
             // Si le paramètre action est définie alors on modifier le paramètre action sinon on laisse par défaut
             isset($this->params[1]) && $this->params[1] != "index" ?  $this->route($this->params[0],$this->params[1]) : $this->route($this->params[0]);
         }
-        else{
+        elseif($this->params[1] != 'img'){
             require_once ROOT.'Public'.$_SERVER["REQUEST_URI"];
+        }
+        else{
+            header("Content-Type: image/gif");
+            readfile( ROOT.'Public'.$_SERVER["REQUEST_URI"]);
         }
     }
 
