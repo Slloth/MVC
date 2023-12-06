@@ -2,6 +2,8 @@
 
 namespace Core\Repository;
 
+use Core\Model\AbstractModel;
+
 /**
  * Permet d'obtenir les 4 requêtes par défaut
  * * findAll(["colonne"=> {"ASC" || "DESC"} ] = NULL);
@@ -16,7 +18,7 @@ abstract class AbstractRepository{
      *
      * @param $model
      */
-    public function __construct(private $model)
+    public function __construct(private AbstractModel $model)
     {
     }
      

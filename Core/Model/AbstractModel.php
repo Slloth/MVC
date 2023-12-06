@@ -3,9 +3,10 @@
 namespace Core\Model;
 
 use Core\Db\Db;
+use Core\Model\interface\ModelInterface;
 use PDOStatement;
 
-abstract class AbstractModel extends Db
+abstract class AbstractModel extends Db implements ModelInterface
 {
 
     protected string $table;
@@ -137,7 +138,6 @@ abstract class AbstractModel extends Db
     /**
      * delete database
      *
-     * @param integer $id
      * @return PDOStatement|FALSE
      */
     public function delete(): PDOStatement|FALSE
