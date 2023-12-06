@@ -41,7 +41,7 @@ Créer une class du nom de la table ***table.php*** dans le dossier [App/Models]
 
 Ajouter le namespace `namespace App\Models;`. 
 
-Puis la faire etendre d'[AbstractModel](Core/Model/AbstractModel.php) et integrer l'interface [ModelInterface](Core/Model/interface/ModelInterface.php).
+Puis la faire étendre d'[AbstractModel](Core/Model/AbstractModel.php).
 
 Enfin créer autant d'Attributs dans votre class que de colonne dans votre table, puis créer les Getters & Setters et pour fini le constructeur.
 ````php
@@ -54,7 +54,7 @@ Créer un class du nom de la class suivis de Repository ***tableRepository.php**
 
 Ajouter le namespace `namespace App\Repositories;`.
 
-Puis la faire etendre d'[AbstractRepository](Core/Repository/AbstractRepository.php).
+Puis la faire étendre d'[AbstractRepository](Core/Repository/AbstractRepository.php).
 
 Enfin créer le constructeur.
 ````php
