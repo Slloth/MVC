@@ -43,7 +43,7 @@ Ajouter le namespace `namespace App\Models;`.
 
 Puis la faire étendre d'[AbstractModel](Core/Model/AbstractModel.php).
 
-Enfin créer autant d'Attributs dans votre class que de colonne dans votre table, puis créer les Getters & Setters et pour fini le constructeur.
+Enfin créer autant d'Attributs **Protected** dans votre class que de colonne dans votre table, puis créer les Getters & Setters et pour finir le constructeur.
 ````php
     public function __construct(){
         $this->table = "nomDeLaTable";
