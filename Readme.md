@@ -62,3 +62,30 @@ Enfin créer le constructeur.
         parent::__construct(new Table());
     }
 ````
+#### Utiliser un Repository
+Aller dans votre controller et instanciez votre Repository.
+
+Exemples:
+````php
+$repo = new ArticleRepository();
+/**
+* @var Article $article
+*/
+$article = $repo->find(1);
+````
+````php
+$repo = new ArticleRepository();
+/**
+* @var Article[] $articles
+*/
+$articles = $repo->findAll();
+````
+**! Noubliez pas d'utilisez la PHPDoc pour typer la variable du même type que le model associé aider votre IDE**
+
+Votre repository dispose par défaut de 4 methodes:
+- findAll
+- find
+- findBy
+- findOneBy
+
+Vous trouverez plus de détails via la PHPDoc.

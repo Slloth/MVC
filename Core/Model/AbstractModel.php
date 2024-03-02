@@ -25,6 +25,7 @@ abstract class AbstractModel extends Db implements ModelInterface
      *
      * @param array|NULL $criterias
      * @param array|NULL $orderBy
+     * 
      * @return PDOStatement|FALSE
      */
     public function select(?array $criterias = NULL, ?array $orderBy = NULL): PDOStatement|FALSE
@@ -153,6 +154,7 @@ abstract class AbstractModel extends Db implements ModelInterface
      *
      * @param string $sql
      * @param array<string>|NULL $attr
+     * 
      * @return PDOStatement|FALSE
      */
     private function executePreparedQuery(string $sql, ?array $attr = NULL): PDOStatement|FALSE
@@ -166,13 +168,15 @@ abstract class AbstractModel extends Db implements ModelInterface
             return $this->db->query($sql);
         }
     }
+
     /**
+     * Hydrate une subclass d'AbstractModel et le renvoi ou Null
      * 
-     *
      * @param array $data
-     * @return self
+     * 
+     * @return AbstractModel|null
      */
-    public function hydrate(array $data): self
+    public function hydrate(array $data): ?self
     {
         foreach ($data as $key => $value) {
             $setter = "set" . ucfirst($key);
