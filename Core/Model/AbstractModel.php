@@ -28,7 +28,7 @@ abstract class AbstractModel extends Db implements ModelInterface
      * 
      * @return PDOStatement|FALSE
      */
-    public function select(?array $criterias = NULL, ?array $orderBy = NULL): PDOStatement|FALSE
+    private function select(?array $criterias = NULL, ?array $orderBy = NULL): PDOStatement|FALSE
     {
         $sql = "";
 

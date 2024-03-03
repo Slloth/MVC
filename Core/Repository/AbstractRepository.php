@@ -3,6 +3,7 @@
 namespace Core\Repository;
 
 use Core\Model\AbstractModel;
+use ReflectionMethod;
 
 /**
  * Permet d'obtenir les 4 requêtes par défaut
@@ -14,12 +15,28 @@ use Core\Model\AbstractModel;
 abstract class AbstractRepository{
     
     /**
+     * Permet de modifier la visibilité de la methode select d'AbstractModel.
+     *
+     * @var ReflectionMethod $select
+     */
+    protected ReflectionMethod $select;
+
+    /**
      * Le model lié au Repository
      * 
+     * Pour créer une nouvelle methode utilisez le code php ci-dessous pour lire dans la base de données.
+     * 
+     * $this->select->invoke($this->model,...args)->fetch()|fetchAll()
+     * 
      * @param AbstractModel $model
+     * @var ReflectionMethod $select
      */
-    public function __construct(private AbstractModel $model)
+    public function __construct(protected AbstractModel $model)
     {
+        //Récupère la méthode select d'AbstractModel, ! le string du nom de la classe intérfère avec l'Autoloader.
+        $this->select = new ReflectionMethod(AbstractModel::class, "select");
+        // Change l'accessibilité de la méthode pour l'execusion de la commande private => public
+        $this->select->setAccessible(true);
     }
      
     /**
@@ -30,7 +47,7 @@ abstract class AbstractRepository{
      */
     public function findAll(array $orderBy = null):array{
         $datas = [];
-        $stmt = $this->model->select(null,$orderBy)->fetchAll();
+        $stmt = $this->select->invoke($this->model,null,$orderBy)->fetchAll();
         foreach($stmt as $data){
             $this->model->hydrate($data);
             $datas[] = $this->model;
@@ -46,7 +63,7 @@ abstract class AbstractRepository{
      * @return AbstractModel|null
      */
     public function find(int $id):?AbstractModel{
-        $data = $this->model->select(["id" => $id])->fetch();
+        $data = $this->select->invoke($this->model,["id" => $id])->fetch();
         return $data != false ? $this->model->hydrate($data) : null;
     }
 
@@ -60,7 +77,7 @@ abstract class AbstractRepository{
      * 
     */ 
     public function findOneBy(array $criteria,array $orderBy = null):?AbstractModel{
-        $data = $this->model->select($criteria,$orderBy)->fetch();
+        $data = $this->select->invoke($this->model,$criteria,$orderBy)->fetch();
         return $data != false ? $this->model->hydrate($data) : null;
     }
 
@@ -73,7 +90,7 @@ abstract class AbstractRepository{
      */ 
     public function findBy(array $criteria,array $orderBy = null):array{
         $datas = [];
-        $stmt = $this->model->select($criteria,$orderBy)->fetchAll();
+        $stmt = $this->select->invoke($this->model,$criteria,$orderBy)->fetchAll();
         foreach($stmt as $data){
             $this->model->hydrate($data);
             $datas[] = $this->model;
