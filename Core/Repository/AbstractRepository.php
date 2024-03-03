@@ -35,8 +35,6 @@ abstract class AbstractRepository{
     {
         //Récupère la méthode select d'AbstractModel, ! le string du nom de la classe intérfère avec l'Autoloader.
         $this->select = new ReflectionMethod(AbstractModel::class, "select");
-        // Change l'accessibilité de la méthode pour l'execusion de la commande private => public
-        $this->select->setAccessible(true);
     }
      
     /**
@@ -47,7 +45,10 @@ abstract class AbstractRepository{
      */
     public function findAll(array $orderBy = null):array{
         $datas = [];
+        // Change l'accessibilité de la méthode pour l'execusion de la commande private => public
+        $this->select->setAccessible(true);
         $stmt = $this->select->invoke($this->model,null,$orderBy)->fetchAll();
+        $this->select->setAccessible(false);
         foreach($stmt as $data){
             $this->model->hydrate($data);
             $datas[] = $this->model;
@@ -63,7 +64,10 @@ abstract class AbstractRepository{
      * @return AbstractModel|null
      */
     public function find(int $id):?AbstractModel{
+        // Change l'accessibilité de la méthode pour l'execusion de la commande private => public
+        $this->select->setAccessible(true);
         $data = $this->select->invoke($this->model,["id" => $id])->fetch();
+        $this->select->setAccessible(false);
         return $data != false ? $this->model->hydrate($data) : null;
     }
 
@@ -77,7 +81,10 @@ abstract class AbstractRepository{
      * 
     */ 
     public function findOneBy(array $criteria,array $orderBy = null):?AbstractModel{
+        // Change l'accessibilité de la méthode pour l'execusion de la commande private => public
+        $this->select->setAccessible(true);
         $data = $this->select->invoke($this->model,$criteria,$orderBy)->fetch();
+        $this->select->setAccessible(false);
         return $data != false ? $this->model->hydrate($data) : null;
     }
 
@@ -90,7 +97,10 @@ abstract class AbstractRepository{
      */ 
     public function findBy(array $criteria,array $orderBy = null):array{
         $datas = [];
+        // Change l'accessibilité de la méthode pour l'execusion de la commande private => public
+        $this->select->setAccessible(true);
         $stmt = $this->select->invoke($this->model,$criteria,$orderBy)->fetchAll();
+        $this->select->setAccessible(false);
         foreach($stmt as $data){
             $this->model->hydrate($data);
             $datas[] = $this->model;
