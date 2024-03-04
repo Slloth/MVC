@@ -17,7 +17,7 @@ Les base de données compatible:
 * mariadb
 ## Création d'un Controller
 ### Controller
-Créer un class suivis de Controller ***MonController.php*** dans le dossier [App/Controllers](App/Controllers).
+Créer un classe suivis de Controller ***MonController.php*** dans le dossier [App/Controllers](App/Controllers).
 
 Ajouter le namespace `namespace App\Controllers;`.
 
@@ -37,24 +37,24 @@ Ajouter le dans le dossier [Views](App/Views) un dossier du nom du controller do
 Et un fichier pour du même nom que l'action du controller ***index.php***.
 ## Création d'un Model
 ### Model
-Créer une class du nom de la table ***table.php*** dans le dossier [App/Models](App/Models).
+Créer une classe du nom de la table ***table.php*** dans le dossier [App/Models](App/Models).
 
 Ajouter le namespace `namespace App\Models;`. 
 
-Puis la faire etendre d'[AbstractModel](Core/Model/AbstractModel.php) et integrer l'interface [ModelInterface](Core/Model/interface/ModelInterface.php).
+Puis la faire étendre d'[AbstractModel](Core/Model/AbstractModel.php).
 
-Enfin créer autant d'Attributs dans votre class que de colonne dans votre table, puis créer les Getters & Setters et pour fini le constructeur.
+Enfin créer autant d'Attributs **Protected** dans votre classe que de colonne dans votre table, puis créer les Getters & Setters et pour finir le constructeur.
 ````php
     public function __construct(){
         $this->table = "nomDeLaTable";
     }
 ````
 ### Repository
-Créer un class du nom de la class suivis de Repository ***tableRepository.php*** dans le dossier [App/Repositories](App/Repositories).
+Créer un classe du nom de la classe suivis de Repository ***tableRepository.php*** dans le dossier [App/Repositories](App/Repositories).
 
 Ajouter le namespace `namespace App\Repositories;`.
 
-Puis la faire etendre d'[AbstractRepository](Core/Repository/AbstractRepository.php).
+Puis la faire étendre d'[AbstractRepository](Core/Repository/AbstractRepository.php).
 
 Enfin créer le constructeur.
 ````php
@@ -62,3 +62,30 @@ Enfin créer le constructeur.
         parent::__construct(new Table());
     }
 ````
+#### Utiliser un Repository
+Aller dans votre controller et instanciez votre Repository.
+
+Exemples:
+````php
+$repo = new ArticleRepository();
+/**
+* @var Article $article
+*/
+$article = $repo->find(1);
+````
+````php
+$repo = new ArticleRepository();
+/**
+* @var Article[] $articles
+*/
+$articles = $repo->findAll();
+````
+**! Noubliez pas d'utilisez la PHPDoc pour typer la variable du même type que le model associé aider votre IDE**
+
+Votre repository dispose par défaut de 4 methodes:
+- findAll
+- find
+- findBy
+- findOneBy
+
+Vous trouverez plus de détails via la PHPDoc.

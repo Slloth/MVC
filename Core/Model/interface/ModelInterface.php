@@ -2,8 +2,6 @@
 
 namespace Core\Model\interface;
 
-use DateTime;
-
 interface ModelInterface{
 
     /**
@@ -24,14 +22,14 @@ interface ModelInterface{
   /**
    * Get the value of created_at
    *
-   * @return DateTime
+   * @return string
    */
-    public function getCreated_at():DateTime;
+    public function getCreated_at():string;
 
     /**
      * Set the value of created_at
      *
      * @return  self
      */ 
-    public function setCreated_at($created_at):self;
+    public function setCreated_at(string $created_at):self;
 }
