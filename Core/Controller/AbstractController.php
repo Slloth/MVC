@@ -2,8 +2,6 @@
 
 namespace Core\Controller;
 
-use AllowDynamicProperties;
-
 //Permet a tout les controllers qui en hérite d'avoir les méthodes basiques
 abstract class AbstractController{
     /**

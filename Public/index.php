@@ -11,6 +11,8 @@ Autoloader::register();
 //On charge les variables d'environemments
 DotEnvEnvironment::dotEnvLoad();
 
+date_default_timezone_set($_ENV["TIMEZONE"]);
+
 $app = new Main;
 
 $app->start();
