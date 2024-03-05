@@ -144,8 +144,9 @@ abstract class AbstractModel extends Db implements ModelInterface
      * * SELECT * FROM table ORDER BY $orderby; || SELECT * FROM table WHERE $criteria;         // Si il y a des critères ou un orderby.
      * * SELECT * FROM table;                                                                   // Si il n'y a pas de critères et d'orderby.
      *
-     * @param array|NULL $criterias
-     * @param array|NULL $orderBy
+     * @param array|null $criterias
+     * @param array|null $orderBy
+     * @param int|null $limit
      * 
      * @return PDOStatement|FALSE
      */
@@ -160,12 +161,22 @@ abstract class AbstractModel extends Db implements ModelInterface
     
             $sql .= " WHERE ";
     
-            // On ajoute au tableau de clées " = ?" qui von être remplacé par les attributs à l'execution de la requête.
             foreach ($criterias as $key => $value) {
-                $criteriaKeys[] = "$key = ?";
-                $criteriaValues[] = $value;
+                // Vérifie si la valeur n'est pas un tableau d'élement si oui alors effectue la même logique mais on implode par OR
+                if (is_array($value)){
+                    $tmpcriterias = [];
+                    foreach($value as $element){
+                        $tmpcriterias[] = "$key = ?";
+                        $criteriaValues[] = $element;
+                    }
+                    $criteriaKeys[] = implode(" OR ",$tmpcriterias);
+                }
+                else{
+                    // On ajoute au tableau de clées " = ?" qui von être remplacé par les attributs à l'execution de la requête.
+                    $criteriaKeys[] = "$key = ?";
+                    $criteriaValues[] = $value;
+                }
             }
-    
             // On implode le tableau de clées en une chaine de caractères avec " AND " entre chaque clée.
             $sql .= implode(" AND ", $criteriaKeys);
         }
