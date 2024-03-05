@@ -4,6 +4,7 @@ namespace Core\Model;
 
 use Core\Db\Db;
 use Core\Model\interface\ModelInterface;
+use Exception;
 use PDOStatement;
 
 abstract class AbstractModel extends Db implements ModelInterface
@@ -148,7 +149,7 @@ abstract class AbstractModel extends Db implements ModelInterface
      * 
      * @return PDOStatement|FALSE
      */
-    private function select(?array $criterias = NULL, ?array $orderBy = NULL): PDOStatement|FALSE
+    private function select(?array $criterias = NULL, ?array $orderBy = NULL, ?int $limit = null): PDOStatement|FALSE
     {
         $sql = "";
     
@@ -170,10 +171,14 @@ abstract class AbstractModel extends Db implements ModelInterface
         }
     
         // Si le tableau de d'orderBy et remplie.
-        if ($orderBy !== NULL) {
-            $columnName = array_keys($orderBy)[0];
-            $order = array_values($orderBy)[0];         // ASC ou DESC
-            $order === "ASC" ? $sql .= " ORDER BY " . $columnName . " " . $order : $sql .= " ORDER BY " . $columnName . " " . $order;
+        if ($orderBy !== NULL && $orderBy !== []) {
+            $criteriaValues[] = array_keys($orderBy)[0];
+            $order = array_values($orderBy)[0];
+            $order === "ASC" ||  $order === "DESC" ? $sql .= " ORDER BY ? " . $order : throw new Exception('$orderBy ne prend que deux réponses ASC ou DESC');
+        }
+
+        if($limit !== NULL) {
+            $limit > 0 && !is_string($limit) ? $sql .= " LIMIT " . $limit : throw new Exception('$limit doit être un Entier positif.');
         }
     
         // On fini la requête et on y ajoute devant le début de la requête
