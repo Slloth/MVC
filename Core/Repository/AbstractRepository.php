@@ -40,18 +40,23 @@ abstract class AbstractRepository{
     /**
      * Requête pour récupèrer toutes les lignes d'une table
      *
-     * @param array<string>|null $orderBy
+     * @param array{string:string}|null $orderBy
+     * @param positive-int|null $limit
+     * 
      * @return AbstractModel[]
      */
-    public function findAll(array $orderBy = null):array{
+    public function findAll(?array $orderBy = null, ?int $limit = null):array{
         $datas = [];
         // Change l'accessibilité de la méthode pour l'execusion de la commande private => public
         $this->select->setAccessible(true);
-        $stmt = $this->select->invoke($this->model,null,$orderBy)->fetchAll();
+        $stmt = $this->select->invoke($this->model,null,$orderBy,$limit)->fetchAll();
         $this->select->setAccessible(false);
         foreach($stmt as $data){
-            $this->model->hydrate($data);
-            $datas[] = $this->model;
+            /**
+             * @var AbstractModel $model
+             */
+            $model = new $this->model();
+            $datas[] = $model->hydrate($data);
         }
        return $datas;
     }
@@ -66,7 +71,7 @@ abstract class AbstractRepository{
     public function find(int $id):?AbstractModel{
         // Change l'accessibilité de la méthode pour l'execusion de la commande private => public
         $this->select->setAccessible(true);
-        $data = $this->select->invoke($this->model,["id" => $id])->fetch();
+        $data = $this->select->invoke($this->model,["id" =>$id])->fetch();
         $this->select->setAccessible(false);
         return $data != false ? $this->model->hydrate($data) : null;
     }
@@ -74,36 +79,39 @@ abstract class AbstractRepository{
     /**
      * Récupère une ligne par rapport aux critères précisés
      * 
-     * @param array<string>:<string> $criteria
-     * @param array<string>:<string>|null $orderBy
+     * @param array $criteria
      * 
      * @return AbstractModel|null
      * 
     */ 
-    public function findOneBy(array $criteria,array $orderBy = null):?AbstractModel{
+    public function findOneBy(string $criteria):?AbstractModel{
         // Change l'accessibilité de la méthode pour l'execusion de la commande private => public
         $this->select->setAccessible(true);
-        $data = $this->select->invoke($this->model,$criteria,$orderBy)->fetch();
+        $data = $this->select->invoke($this->model,$criteria)->fetch();
         $this->select->setAccessible(false);
         return $data != false ? $this->model->hydrate($data) : null;
     }
 
     /**
      * Récupère toutes lignes par rapport aux critères précisés
-     *
-     * @param array<string>:<string> $criteria
-     * @param array<string>:<string>|null $orderBy
+     * @param array $criteria
+     * @param array{string:string}|null $orderBy
+     * @param positve-int|null $limit
+     * 
      * @return AbstractModel[]
      */ 
-    public function findBy(array $criteria,array $orderBy = null):array{
+    public function findBy(array $criteria, ?array $orderBy = null, ?int $limit = null):array{
         $datas = [];
         // Change l'accessibilité de la méthode pour l'execusion de la commande private => public
         $this->select->setAccessible(true);
-        $stmt = $this->select->invoke($this->model,$criteria,$orderBy)->fetchAll();
+        $stmt = $this->select->invoke($this->model,$criteria,$orderBy,$limit)->fetchAll();
         $this->select->setAccessible(false);
         foreach($stmt as $data){
-            $this->model->hydrate($data);
-            $datas[] = $this->model;
+            /**
+             * @var AbstractModel $model
+             */
+            $model = new $this->model();
+            $datas[] = $model->hydrate($data);
         }
        return $datas;
     }
