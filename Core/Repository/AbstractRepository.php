@@ -3,6 +3,9 @@
 namespace Core\Repository;
 
 use Core\Model\AbstractModel;
+use Core\Model\interface\ModelInterface;
+use Exception;
+use PDOStatement;
 use ReflectionMethod;
 
 /**
@@ -17,16 +20,12 @@ abstract class AbstractRepository{
     /**
      * Permet de modifier la visibilité de la methode select d'AbstractModel.
      *
-     * @var ReflectionMethod $select
+     * @var ReflectionMethod $queryBuilder
      */
-    protected ReflectionMethod $select;
+    private ReflectionMethod $queryBuilder;
 
     /**
      * Le model lié au Repository
-     * 
-     * Pour créer une nouvelle methode utilisez le code php ci-dessous pour lire dans la base de données.
-     * 
-     * $this->select->invoke($this->model,...args)->fetch()|fetchAll()
      * 
      * @param AbstractModel $model
      * @var ReflectionMethod $select
@@ -34,7 +33,7 @@ abstract class AbstractRepository{
     public function __construct(protected AbstractModel $model)
     {
         //Récupère la méthode select d'AbstractModel, ! le string du nom de la classe intérfère avec l'Autoloader.
-        $this->select = new ReflectionMethod(AbstractModel::class, "select");
+        $this->queryBuilder = new ReflectionMethod(AbstractModel::class, "select");
     }
      
     /**
@@ -46,19 +45,11 @@ abstract class AbstractRepository{
      * @return AbstractModel[]
      */
     public function findAll(?array $orderBy = null, ?int $limit = null):array{
-        $datas = [];
         // Change l'accessibilité de la méthode pour l'execusion de la commande private => public
-        $this->select->setAccessible(true);
-        $stmt = $this->select->invoke($this->model,null,$orderBy,$limit)->fetchAll();
-        $this->select->setAccessible(false);
-        foreach($stmt as $data){
-            /**
-             * @var AbstractModel $model
-             */
-            $model = new $this->model();
-            $datas[] = $model->hydrate($data);
-        }
-       return $datas;
+        $this->queryBuilder->setAccessible(true);
+        $stmt = $this->queryBuilder->invoke($this->model,null,$orderBy,$limit);
+        $this->queryBuilder->setAccessible(false);
+        return $this->getResult($stmt);
     }
 
     /**
@@ -70,10 +61,10 @@ abstract class AbstractRepository{
      */
     public function find(int $id):?AbstractModel{
         // Change l'accessibilité de la méthode pour l'execusion de la commande private => public
-        $this->select->setAccessible(true);
-        $data = $this->select->invoke($this->model,["id" =>$id])->fetch();
-        $this->select->setAccessible(false);
-        return $data != false ? $this->model->hydrate($data) : null;
+        $this->queryBuilder->setAccessible(true);
+        $stmt = $this->queryBuilder->invoke($this->model,["id" =>$id]);
+        $this->queryBuilder->setAccessible(false);
+        return $this->getSingleResult($stmt);
     }
 
     /**
@@ -86,10 +77,10 @@ abstract class AbstractRepository{
     */ 
     public function findOneBy(string $criteria):?AbstractModel{
         // Change l'accessibilité de la méthode pour l'execusion de la commande private => public
-        $this->select->setAccessible(true);
-        $data = $this->select->invoke($this->model,$criteria)->fetch();
-        $this->select->setAccessible(false);
-        return $data != false ? $this->model->hydrate($data) : null;
+        $this->queryBuilder->setAccessible(true);
+        $stmt = $this->queryBuilder->invoke($this->model,$criteria);
+        $this->queryBuilder->setAccessible(false);
+        return $this->getSingleResult($stmt);
     }
 
     /**
@@ -101,19 +92,46 @@ abstract class AbstractRepository{
      * @return AbstractModel[]
      */ 
     public function findBy(array $criteria, ?array $orderBy = null, ?int $limit = null):array{
-        $datas = [];
         // Change l'accessibilité de la méthode pour l'execusion de la commande private => public
-        $this->select->setAccessible(true);
-        $stmt = $this->select->invoke($this->model,$criteria,$orderBy,$limit)->fetchAll();
-        $this->select->setAccessible(false);
-        foreach($stmt as $data){
-            /**
-             * @var AbstractModel $model
-             */
-            $model = new $this->model();
-            $datas[] = $model->hydrate($data);
-        }
-       return $datas;
+        $this->queryBuilder->setAccessible(true);
+        $stmt = $this->queryBuilder->invoke($this->model,$criteria,$orderBy,$limit);
+        $this->queryBuilder->setAccessible(false);
+        return $this->getResult($stmt);
     }
 
+    protected function createQuery(string $select = '*', ?array $criteria= null, ?array $orderBy = null, ?int $limit = null):PDOStatement{
+        $this->queryBuilder->setAccessible(true);
+        /**
+         * @var PDOStatement $stmt
+         */
+        $stmt = $this->queryBuilder->invoke($this->model,$criteria,$orderBy,$limit,$select);
+        $this->queryBuilder->setAccessible(false);
+        return $stmt;
+    }
+
+    protected function getResult(PDOStatement $stmt):array{
+        $datas = [];
+        $stmt = $stmt->fetchAll();
+        foreach($stmt as $data){
+            if(array_key_exists("id",$data) && array_key_exists("created_at",$data)){
+                /**
+                 * @var AbstractModel $model
+                 */
+                $model = new $this->model();
+                $datas[] = $model->hydrate($data);
+            }
+            else{
+                $datas[] = array_values($data);
+            }
+        }
+        return $datas;
+    }
+
+    protected function getSingleResult(PDOStatement $stmt):mixed{
+        $data = $stmt->fetch();
+        if(array_key_exists(ModelInterface::ID,$data) && array_key_exists(ModelInterface::CREATED_AT,$data)){
+            return $data != false ? $this->model->hydrate($data) : null;
+        }
+        return count($data) > 1 ? throw new Exception("Il y'a plus d'un element !"): array_values($data)[0];
+    }
 }
