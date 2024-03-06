@@ -150,7 +150,7 @@ abstract class AbstractModel extends Db implements ModelInterface
      * 
      * @return PDOStatement|FALSE
      */
-    private function select(?array $criterias = NULL, ?array $orderBy = NULL, ?int $limit = null): PDOStatement|FALSE
+    private function select(?array $criterias = NULL, ?array $orderBy = NULL, ?int $limit = null, string $select = '*'): PDOStatement|FALSE
     {
         $sql = "";
     
@@ -194,7 +194,7 @@ abstract class AbstractModel extends Db implements ModelInterface
     
         // On fini la requête et on y ajoute devant le début de la requête
         $sql .= ";";
-        $sql = "SELECT * FROM " . $this->table . $sql;
+        $sql = "SELECT $select FROM " . $this->table . $sql;
     
         return $this->executePreparedQuery($sql, isset($criteriaValues) ? $criteriaValues : NULL);       // Condition térnaire si la variable $criteria et définie.
     }
