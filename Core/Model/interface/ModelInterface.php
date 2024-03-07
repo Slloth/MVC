@@ -4,6 +4,9 @@ namespace Core\Model\interface;
 
 interface ModelInterface{
 
+  const ID = "id";
+  const CREATED_AT = "created_at";
+
     /**
      * Get the value of id
      *
