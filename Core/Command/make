@@ -1,0 +1,276 @@
+<?php
+
+const CEND      = "\33[0m";
+const CBOLD     = "\33[1m";
+const CITALIC   = "\33[3m";
+const CURL      = "\33[4m";
+const CBLINK    = "\33[5m";
+const CBLINK2   = "\33[6m";
+const CSELECTED = "\33[7m";
+
+const CBLACK  = "\33[30m";
+const CRED    = "\33[31m";
+const CGREEN  = "\033[32m";
+const CYELLOW = "\33[33m";
+const CBLUE   = "\33[34m";
+const CVIOLET = "\33[35m";
+const CBEIGE  = "\33[36m";
+const CWHITE  = "\33[37m";
+
+const CBLACKBG  = "\33[40m";
+const CREDBG    = "\33[41m";
+const CGREENBG  = "\33[42m";
+const CYELLOWBG = "\33[43m";
+const CBLUEBG   = "\33[44m";
+const CVIOLETBG = "\33[45m";
+const CBEIGEBG  = "\33[46m";
+const CWHITEBG  = "\33[47m";
+
+const CGREY    = "\33[90m";
+const CRED2    = "\33[91m";
+const CGREEN2  = "\33[92m";
+const CYELLOW2 = "\33[93m";
+const CBLUE2   = "\33[94m";
+const CVIOLET2 = "\33[95m";
+const CBEIGE2  = "\33[96m";
+const CWHITE2  = "\33[97m";
+
+const CGREYBG    = "\33[100m";
+const CREDBG2    = "\33[101m";
+const CGREENBG2  = "\33[102m";
+
+
+function help():void
+{
+    /**
+     * @var string $func
+     */
+    foreach(get_defined_functions()["user"] as $func){
+
+        echo $func != "help" ? $func."\n":'';
+    }
+}
+
+/**
+ * Crée un controller prédéfinie avec sa vue associée.
+ *
+ * @return void
+ */
+function controller():void{
+
+    $controllerName = readline("Entrée le nom de votre Controller :");
+    $controllerName = ucfirst($controllerName);
+    $controllerPath = "App/Controllers/".$controllerName."Controller.php";
+    $viewPath = "App/Views/".$controllerName;
+    $controllerName = $controllerName."Controller";
+    $controllerData = <<<EOF
+    <?php
+    
+    namespace App\Controllers;
+    
+    use Core\Controller\AbstractController;
+    
+    class $controllerName extends AbstractController{
+        public function index(){
+            \$title = "Je suis le $controllerName";
+            \$this->render("index",compact('title'));
+        }
+    }
+    EOF;
+    $viewData = <<<EOF
+    <h1>Je suis la page rendu par le $controllerName</h1>
+    EOF;
+    $stream = fopen($controllerPath,'w');
+    fwrite($stream,$controllerData);
+    fclose($stream);
+    mkdir($viewPath);
+    $stream = fopen($viewPath."/index.php",'w');
+    fwrite($stream,$viewData);
+    fclose($stream);
+}
+
+/**
+ * Créer un model prédéfinie avec son repository associé.
+ *
+ * @return void
+ */
+function model():void{
+    /**
+     * @var string $modelPath
+     * @var string $attribute
+     */
+    global $modelPath,$attribute;
+    $modelName = readline("Entrée le nom du Model :");
+    $modelName = ucfirst($modelName);
+    $modelPath = "App/Models/".$modelName.".php";
+    if(!file_exists($modelPath)){
+        $repositoryName = $modelName.'Repository';
+        $repositoryPath = "App/Repositories/".$repositoryName.'.php';
+    
+        $modelData = <<<EOF
+        <?php
+        
+        namespace App\Models;
+        
+        use DateTimeImmutable;
+        use Core\Model\AbstractModel;
+        use Core\Model\interface\ModelInterface;
+    
+        class $modelName extends AbstractModel{
+    
+            protected int \$id;
+            protected DateTimeImmutable \$created_at;
+            
+            public function __construct() {
+                \$this->table = "$modelName";
+            }
+    
+            public function getId(): int
+            {
+                return \$this->id;
+            }
+        
+            public function setId(\$id): ModelInterface
+            {
+                \$this->id = \$id;
+                return \$this;
+            }
+    
+            public function getCreated_at(): DateTimeImmutable
+            {
+                return \$this->created_at;
+            }
+        
+            public function setCreated_at(string \$created_at): ModelInterface
+            {
+                \$this->created_at = new DateTimeImmutable(\$created_at);
+                return \$this;
+            }
+        }
+        EOF;
+    
+        $repositoryData = <<<EOF
+        <?php
+    
+        namespace App\Repositories;
+    
+        use App\Models\\$modelName;
+        use Core\Repository\AbstractRepository;
+    
+        final class $repositoryName extends AbstractRepository{
+            public function __construct() {
+                parent::__construct(new $modelName());
+            }
+        }
+        EOF;
+    
+        $stream = fopen($modelPath,'w');
+        fwrite($stream,$modelData);
+        fclose($stream);
+        $stream = fopen($repositoryPath,'w');
+        fwrite($stream,$repositoryData);
+        fclose($stream);
+
+        echo CGREEN."La création du Model $modelName s'est effectué correctement !".CEND;
+        
+    }
+    else{
+        echo CSELECTED."le Model exsiste déjà, Modifions le !".CEND;
+    }
+
+    $createNewCollumn = function(string $type):bool {
+        /**
+         * @var string $modelPath
+         * @var string $attribute
+         * @var string[] $data
+         * @var string[] $lines
+         */
+        global $attribute, $modelPath;
+        $data = [];
+        $data["attribute"] = "\tprotected $type \$$attribute;\n";
+        $attributFunctionName = ucfirst($attribute);
+        $data["getterSetter"] =
+        <<<EOF
+            public function get$attributFunctionName(): $type
+            {
+                return \$this->$attribute;
+            }
+        
+            public function set$attributFunctionName($type \$$attribute): ModelInterface
+            {
+                \$this->$attribute = \$$attribute;
+                return \$this;
+            }
+        }
+        EOF;
+        /**
+         * @var string[] $lines
+         */
+        $lines = file($modelPath,FILE_IGNORE_NEW_LINES);
+        $lineNumber = array_search("    public function __construct() {",$lines);
+        $lines[$lineNumber -1] = $data["attribute"];
+        $lines[count($lines)-1] = $data["getterSetter"];
+        file_put_contents($modelPath,implode("\n",$lines));
+
+        echo CGREEN."La création du nouveau champ $attribute s'est effectué correctement !".CEND."\n";
+        return true;
+    };
+
+    echo CGREY."\r\nAppuiez sur entrée (\"\") pour quitter l'ajout d'un nouveau champ.\r\n".CEND;
+
+    while(($attribute = readline("Ajouter un nouveau champ :")) !== ""){
+        $fieldCreationFinished = false;
+
+        while(!$fieldCreationFinished){
+            $type = readline("De quelle type est ce champ :");
+            switch($type){
+                case ($type == '?' || $type == 'help'):
+                    echo
+                        <<<EOF
+                            string
+                            int | integer
+                            float
+                            datetime
+                            bool | boolean\r\n
+                        EOF;
+                    continue 2;
+                case ('string'):
+                    $fieldCreationFinished = $createNewCollumn("string");
+                    break;
+                case ($type == 'int' || $type =='integer'):
+                    $fieldCreationFinished = $createNewCollumn("int");
+                    break;
+                case 'float':
+                    $fieldCreationFinished = $createNewCollumn("float");
+                   break;
+                case 'datetime':
+                    $fieldCreationFinished = $createNewCollumn("DateTime");
+                   break;
+                case ($type == 'bool' || $type == 'boolean'):
+                    $fieldCreationFinished = $createNewCollumn("bool");
+                    break;
+                default:
+                    echo "je n'ai pas trouver de type ! Pour lister les différents types tapez '?' ";
+                    continue 2;
+            }
+        }
+    }
+    echo "\n".CGREENBG."L'ajout des champs s'est effectués correctement !".CEND;
+}
+
+/**
+ * Detecte et redirige les commandes lancer 
+ */
+if (php_sapi_name() === 'cli') {
+    if (count($argv) === 1) {
+        echo 'See help command'.PHP_EOL;
+        exit();
+    }
+
+    if (function_exists($argv[1])) {
+        $func = $argv[1];
+        array_shift($argv);
+        array_shift($argv);
+        $func(...$argv);
+    }
+}
