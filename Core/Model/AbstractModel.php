@@ -4,6 +4,7 @@ namespace Core\Model;
 
 use Core\Db\Db;
 use Core\Model\interface\ModelInterface;
+use DateTimeImmutable;
 use Exception;
 use PDOStatement;
 
@@ -71,7 +72,7 @@ abstract class AbstractModel extends Db implements ModelInterface
         foreach ($this as $field => $value) {
             if ($field !== NULL && $field !== 'table' && $field !== 'db') {
                 $fields[] = "$field = ?";
-                $values[] = $value;
+                $values[] = !$value instanceof DateTimeImmutable? $value:$value->format("Y-m-d H:i:s");
             }
         }
         
