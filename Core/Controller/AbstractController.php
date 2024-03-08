@@ -13,7 +13,7 @@ abstract class AbstractController{
      */
     public function render(string $ficher, array $options = []){
         $controllerPath = str_replace(['Controllers','Controller','App'],'',get_class($this));
-        $controllerPath = str_replace('\\','/',$controllerPath);
+        $controllerPath = str_replace("\\",'/',$controllerPath);
         $controllerPath = ROOT.'App/Views'.strtolower($controllerPath).'/'. $ficher.'.php';
         $this->renderBase($controllerPath,$options);
     }

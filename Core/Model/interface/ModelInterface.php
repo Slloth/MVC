@@ -2,7 +2,12 @@
 
 namespace Core\Model\interface;
 
+use DateTimeImmutable;
+
 interface ModelInterface{
+
+  const ID = "id";
+  const CREATED_AT = "created_at";
 
     /**
      * Get the value of id
@@ -17,14 +22,14 @@ interface ModelInterface{
      * @param int $id
      * @return self
      */
-    public function setId($id):self;
+    public function setId(int $id):self;
 
   /**
    * Get the value of created_at
    *
-   * @return string
+   * @return DateTimeImmutable
    */
-    public function getCreated_at():string;
+    public function getCreated_at():DateTimeImmutable;
 
     /**
      * Set the value of created_at
