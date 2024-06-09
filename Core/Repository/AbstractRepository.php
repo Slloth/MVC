@@ -49,7 +49,7 @@ abstract class AbstractRepository{
         $this->queryBuilder->setAccessible(true);
         $stmt = $this->queryBuilder->invoke($this->model,null,$orderBy,$limit);
         $this->queryBuilder->setAccessible(false);
-        return $this->getResult($stmt);
+        return $this->getResults($stmt);
     }
 
     /**
@@ -75,7 +75,7 @@ abstract class AbstractRepository{
      * @return AbstractModel|null
      * 
     */ 
-    public function findOneBy(string $criteria):?AbstractModel{
+    public function findOneBy(array $criteria):?AbstractModel{
         // Change l'accessibilité de la méthode pour l'execusion de la commande private => public
         $this->queryBuilder->setAccessible(true);
         $stmt = $this->queryBuilder->invoke($this->model,$criteria);
@@ -96,7 +96,7 @@ abstract class AbstractRepository{
         $this->queryBuilder->setAccessible(true);
         $stmt = $this->queryBuilder->invoke($this->model,$criteria,$orderBy,$limit);
         $this->queryBuilder->setAccessible(false);
-        return $this->getResult($stmt);
+        return $this->getResults($stmt);
     }
 
     protected function createQuery(string $select = '*', ?array $criteria= null, ?array $orderBy = null, ?int $limit = null):PDOStatement{
@@ -109,7 +109,7 @@ abstract class AbstractRepository{
         return $stmt;
     }
 
-    protected function getResult(PDOStatement $stmt):array{
+    protected function getResults(PDOStatement $stmt):array{
         $datas = [];
         $stmt = $stmt->fetchAll();
         foreach($stmt as $data){
