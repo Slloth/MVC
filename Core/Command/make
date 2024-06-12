@@ -148,10 +148,14 @@ function model():void{
             }
             
             public function __set(\$property, \$value) {
-                if (\$property === 'createdAt') {
-                    \$this->setCreated_at(\$value);
-                } else {
-                    \$this->\$property = \$value;
+                switch (\$property) {
+                    case 'createdAt':
+                        \$this->setCreated_at(\$value);
+                        break;
+
+                    default:
+                        \$this->\$property = \$value;
+                        break;
                 }
             }
         }
@@ -211,7 +215,6 @@ function model():void{
                 \$this->$attribute = \$$attribute;
                 return \$this;
             }
-        }
         EOF;
         /**
          * @var string[] $lines
@@ -219,8 +222,26 @@ function model():void{
         $lines = file($modelPath,FILE_IGNORE_NEW_LINES);
         $lineNumber = array_search("    public function __construct() {",$lines);
         $lines[$lineNumber -1] = $data["attribute"];
-        $lines[count($lines)-1] = $data["getterSetter"];
+        $lines[array_search("    public function __set(\$property, \$value) {",$lines)-1] = "\n".$data["getterSetter"]."\n";
         file_put_contents($modelPath,implode("\n",$lines));
+        if(class_exists("\\App\\Models\\".$type,false)){
+            if(array_search("use App\\Models\\".$type.";",$lines) == false){
+                $lineNumber = array_search("namespace App\Models;",$lines);
+                $lines[$lineNumber +1] = "\nuse App\\Models\\".$type.";\nuse App\\Repositories\\".$type."Repository;";
+            }
+            file_put_contents($modelPath,implode("\n",$lines));
+            $lineNumber = array_search("            default:",$lines);
+            $repo = $type."Repository();";
+            $lines[$lineNumber-1] =<<<EOF
+                        case 'id_$attribute':
+                            \$r = new $repo
+                            \$$type = \$r->find(\$value);
+                            \$this->set$attributFunctionName(\$$type);
+                            break;
+
+            EOF;
+            file_put_contents($modelPath,implode("\n",$lines));
+        }
 
         echo CGREEN."La création du nouveau champ $attribute s'est effectué correctement !".CEND."\n";
         return true;
@@ -241,7 +262,8 @@ function model():void{
                             int | integer
                             float
                             datetime
-                            bool | boolean\r\n
+                            bool | boolean
+                            relation\r\n
                         EOF;
                     continue 2;
                 case ('string'):
@@ -258,6 +280,33 @@ function model():void{
                    break;
                 case ($type == 'bool' || $type == 'boolean'):
                     $fieldCreationFinished = $createNewCollumn("bool");
+                    break;
+                case 'relation':
+                    while(($entity = readline("A quelle entité ce champ doit être relié ?:")) != ""){
+                        $entity = ucfirst($entity);
+                        $entityFile = dirname(__DIR__,2)."\\App\\Models\\".$entity.".php";
+                        require_once dirname(__DIR__,2)."\\Core\\Model\\Interface\\ModelInterface.php";
+                        require_once dirname(__DIR__,2)."\\Core\\Db\\Db.php";
+                        require_once dirname(__DIR__,2)."\\Core\\Model\\AbstractModel.php"; 
+                        if(file_exists($entityFile)){
+                            require_once $entityFile;
+                            if(class_exists("\\App\\Models\\".$entity,false)){
+                                $fieldCreationFinished = $createNewCollumn($entity);
+                                continue 3;
+                            }
+                        }
+                        else{
+                            echo CYELLOWBG."je n'ai pas trouver la classe !".CEND."\n";
+                        }
+                        // if($relation == "oneToMany"){
+                        //     $relation = readline("De quelle relation est ce champ :");
+                        // }
+                        // echo
+                        // <<<EOF
+                        // oneToMany
+                        // MmanyToMany
+                        // EOF;
+                    }
                     break;
                 default:
                     echo "je n'ai pas trouver de type ! Pour lister les différents types tapez '?' ";
