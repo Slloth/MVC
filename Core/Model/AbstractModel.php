@@ -28,9 +28,14 @@ abstract class AbstractModel extends Db implements ModelInterface
         // On ajoute au tableau de clées " = ?" qui von être remplacé par les attributs à l'execution de la requête.
         foreach ($this as $field => $value) {
             if ($field !== NULL && $field !== 'table') {
-                $fields[] = $field;
                 $inters[] = "?";
-                $values[] = $value;
+                if($value instanceof AbstractModel){
+                    $fields[] = "id_".$field;
+                    $values[] = $value->getId();
+                }else{
+                    $fields[] = $field;
+                    $values[] = $value;
+                }
             }
         }
         $fields[] = "createdAt";
