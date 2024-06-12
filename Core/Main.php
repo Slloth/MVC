@@ -34,7 +34,7 @@ class Main{
             require_once ROOT.'Public'.$_SERVER["REQUEST_URI"];
         }
         else{
-            header("Content-Type: image/gif");
+            header("Content-Type: application/pdf");
             readfile( ROOT.'Public'.$_SERVER["REQUEST_URI"]);
         }
     }
