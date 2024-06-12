@@ -146,6 +146,14 @@ function model():void{
                 \$this->created_at = new DateTimeImmutable(\$created_at);
                 return \$this;
             }
+            
+            public function __set(\$property, \$value) {
+                if (\$property === 'createdAt') {
+                    \$this->setCreated_at(\$value);
+                } else {
+                    \$this->\$property = \$value;
+                }
+            }
         }
         EOF;
     
@@ -156,10 +164,13 @@ function model():void{
     
         use App\Models\\$modelName;
         use Core\Repository\AbstractRepository;
-    
+        /**
+         * @template T
+         * @template-extends AbstractRepository<$modelName>
+         */
         final class $repositoryName extends AbstractRepository{
             public function __construct() {
-                parent::__construct(new $modelName());
+                parent::__construct($modelName::class);
             }
         }
         EOF;

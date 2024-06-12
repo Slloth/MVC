@@ -2,11 +2,10 @@
 
 namespace Core\Repository;
 
+use Core\Db\Db;
 use Core\Model\AbstractModel;
-use Core\Model\interface\ModelInterface;
 use Exception;
 use PDOStatement;
-use ReflectionMethod;
 
 /**
  * Permet d'obtenir les 4 requêtes par défaut
@@ -14,27 +13,15 @@ use ReflectionMethod;
  * * findBy(["nom"=>"valeurs],["colonne"=> {"ASC" || "DESC"} ] = null);
  * * find(id);
  * * findOneBy(["nom"=>"valeurs],["colonne"=> {"ASC" || "DESC"} ] = null);
+ * 
+ * @template T of AbstractModel
  */
 abstract class AbstractRepository{
-    
-    /**
-     * Permet de modifier la visibilité de la methode select d'AbstractModel.
-     *
-     * @var ReflectionMethod $queryBuilder
-     */
-    private ReflectionMethod $queryBuilder;
 
     /**
      * Le model lié au Repository
-     * 
-     * @param AbstractModel $model
-     * @var ReflectionMethod $select
      */
-    public function __construct(protected AbstractModel $model)
-    {
-        //Récupère la méthode select d'AbstractModel, ! le string du nom de la classe intérfère avec l'Autoloader.
-        $this->queryBuilder = new ReflectionMethod(AbstractModel::class, "select");
-    }
+    public function __construct(protected string $model){}
      
     /**
      * Requête pour récupèrer toutes les lignes d'une table
@@ -42,29 +29,21 @@ abstract class AbstractRepository{
      * @param array{string:string}|null $orderBy
      * @param positive-int|null $limit
      * 
-     * @return AbstractModel[]
+     * @return T[]
      */
     public function findAll(?array $orderBy = null, ?int $limit = null):array{
-        // Change l'accessibilité de la méthode pour l'execusion de la commande private => public
-        $this->queryBuilder->setAccessible(true);
-        $stmt = $this->queryBuilder->invoke($this->model,null,$orderBy,$limit);
-        $this->queryBuilder->setAccessible(false);
+        $stmt = $this->select(null,$orderBy,$limit);
         return $this->getResults($stmt);
     }
 
     /**
      * Requête pour récupèrer une ligne d'une table via son id
      * 
-     * @param int $id
-     * 
-     * @return AbstractModel|null
+     * @return T
      */
-    public function find(int $id):?AbstractModel{
-        // Change l'accessibilité de la méthode pour l'execusion de la commande private => public
-        $this->queryBuilder->setAccessible(true);
-        $stmt = $this->queryBuilder->invoke($this->model,["id" =>$id]);
-        $this->queryBuilder->setAccessible(false);
-        return $this->getSingleResult($stmt);
+    public function find(int $id):AbstractModel{
+        $stmt = $this->select(["id" =>$id]);
+        return  $this->getSingleResult($stmt);
     }
 
     /**
@@ -72,14 +51,11 @@ abstract class AbstractRepository{
      * 
      * @param array $criteria
      * 
-     * @return AbstractModel|null
+     * @return T|null
      * 
     */ 
-    public function findOneBy(array $criteria):?AbstractModel{
-        // Change l'accessibilité de la méthode pour l'execusion de la commande private => public
-        $this->queryBuilder->setAccessible(true);
-        $stmt = $this->queryBuilder->invoke($this->model,$criteria);
-        $this->queryBuilder->setAccessible(false);
+    public function findOneBy(array $criteria):AbstractModel|NULL{
+        $stmt = $this->select($criteria);
         return $this->getSingleResult($stmt);
     }
 
@@ -89,49 +65,103 @@ abstract class AbstractRepository{
      * @param array{string:string}|null $orderBy
      * @param positve-int|null $limit
      * 
-     * @return AbstractModel[]
+     * @return T[]
      */ 
     public function findBy(array $criteria, ?array $orderBy = null, ?int $limit = null):array{
-        // Change l'accessibilité de la méthode pour l'execusion de la commande private => public
-        $this->queryBuilder->setAccessible(true);
-        $stmt = $this->queryBuilder->invoke($this->model,$criteria,$orderBy,$limit);
-        $this->queryBuilder->setAccessible(false);
+        $stmt = $this->select($criteria,$orderBy,$limit);
         return $this->getResults($stmt);
     }
 
-    protected function createQuery(string $select = '*', ?array $criteria= null, ?array $orderBy = null, ?int $limit = null):PDOStatement{
-        $this->queryBuilder->setAccessible(true);
-        /**
-         * @var PDOStatement $stmt
-         */
-        $stmt = $this->queryBuilder->invoke($this->model,$criteria,$orderBy,$limit,$select);
-        $this->queryBuilder->setAccessible(false);
-        return $stmt;
-    }
-
-    protected function getResults(PDOStatement $stmt):array{
+    /**
+     * Retourne toutes les résultats du select dans un tableau d'objet
+     * 
+     * @param PDOStatement $stmt
+     * @return T[]
+     */
+    private function getResults(PDOStatement $stmt):array{
         $datas = [];
-        $stmt = $stmt->fetchAll();
-        foreach($stmt as $data){
-            if(array_key_exists("id",$data) && array_key_exists("created_at",$data)){
-                /**
-                 * @var AbstractModel $model
-                 */
-                $model = new $this->model();
-                $datas[] = $model->hydrate($data);
-            }
-            else{
-                $datas[] = array_values($data);
-            }
+        while($data = $stmt->fetchObject($this->model)){
+            array_push($datas,$data);
         }
         return $datas;
     }
 
-    protected function getSingleResult(PDOStatement $stmt):mixed{
-        $data = $stmt->fetch();
-        if(array_key_exists(ModelInterface::ID,$data) && array_key_exists(ModelInterface::CREATED_AT,$data)){
-            return $data != false ? $this->model->hydrate($data) : null;
+    /**
+     * Retourne le premier résultat en un objet
+     * 
+     * @param PDOStatement $stmt
+     * 
+     * @return T
+     */
+    private function getSingleResult(PDOStatement $stmt):AbstractModel{
+        return $stmt->fetchObject($this->model);
+    }
+
+        /**
+     * Execute la partie Read du CRUD
+     * 
+     * On créer une variable requête qui peux prendre plusieurs formes :
+     * 
+     * * SELECT * FROM table WHERE $criteria ORDER BY $orderby;                                 // Si il y a des critères et un orderby.
+     * * SELECT * FROM table ORDER BY $orderby; || SELECT * FROM table WHERE $criteria;         // Si il y a des critères ou un orderby.
+     * * SELECT * FROM table;                                                                   // Si il n'y a pas de critères et d'orderby.
+     *
+     * @param array|null $criterias
+     * @param array|null $orderBy
+     * @param int|null $limit
+     * 
+     * 
+     * @return PDOStatement|FALSE
+     */
+    private function select(?array $criterias = NULL, ?array $orderBy = NULL, ?int $limit = NULL, string $select = '*'): PDOStatement|FALSE
+    {
+        $tableName = explode("\\",$this->model);
+        $tableName = end($tableName);
+        
+        $sql = "";
+    
+        // Si le tableau de critères est non null et remplie.
+        if ($criterias !== NULL && $criterias !== []) {
+            $criteriaKeys = [];
+            $criteriaValues = [];
+    
+            $sql .= " WHERE ";
+    
+            foreach ($criterias as $key => $value) {
+                // Vérifie si la valeur n'est pas un tableau d'élement si oui alors effectue la même logique mais on implode par OR
+                if (is_array($value)){
+                    $tmpcriterias = [];
+                    foreach($value as $element){
+                        $tmpcriterias[] = "$key = ?";
+                        $criteriaValues[] = $element;
+                    }
+                    $criteriaKeys[] = implode(" OR ",$tmpcriterias);
+                }
+                else{
+                    // On ajoute au tableau de clées " = ?" qui von être remplacé par les attributs à l'execution de la requête.
+                    $criteriaKeys[] = "$key = ?";
+                    $criteriaValues[] = $value;
+                }
+            }
+            // On implode le tableau de clées en une chaine de caractères avec " AND " entre chaque clée.
+            $sql .= implode(" AND ", $criteriaKeys);
         }
-        return count($data) > 1 ? throw new Exception("Il y'a plus d'un element !"): array_values($data)[0];
+    
+        // Si le tableau de d'orderBy et remplie.
+        if ($orderBy !== NULL && $orderBy !== []) {
+            $criteriaValues[] = array_keys($orderBy)[0];
+            $order = array_values($orderBy)[0];
+            $order === "ASC" ||  $order === "DESC" ? $sql .= " ORDER BY ? " . $order : throw new Exception('$orderBy ne prend que deux réponses ASC ou DESC');
+        }
+
+        if($limit !== NULL) {
+            $limit > 0 && !is_string($limit) ? $sql .= " LIMIT " . $limit : throw new Exception('$limit doit être un Entier positif.');
+        }
+    
+        // On fini la requête et on y ajoute devant le début de la requête
+        $sql .= ";";
+        $sql = "SELECT $select FROM " . $tableName . $sql;
+    
+        return Db::executePreparedQuery($sql, isset($criteriaValues) ? $criteriaValues : NULL);       // Condition térnaire si la variable $criteria et définie.
     }
 }
