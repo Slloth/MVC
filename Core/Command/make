@@ -165,7 +165,6 @@ function model():void{
         use App\Models\\$modelName;
         use Core\Repository\AbstractRepository;
         /**
-         * @template T
          * @template-extends AbstractRepository<$modelName>
          */
         final class $repositoryName extends AbstractRepository{
