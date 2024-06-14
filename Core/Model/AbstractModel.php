@@ -2,6 +2,7 @@
 
 namespace Core\Model;
 
+use ArrayObject;
 use Core\Db\Db;
 use Core\Model\interface\ModelInterface;
 use DateTimeImmutable;
@@ -27,7 +28,7 @@ abstract class AbstractModel extends Db implements ModelInterface
         
         // On ajoute au tableau de clées " = ?" qui von être remplacé par les attributs à l'execution de la requête.
         foreach ($this as $field => $value) {
-            if ($field !== NULL && $field !== 'table') {
+            if (($field !== NULL && $field !== 'table') && (!$value instanceof ArrayObject)) {
                 $inters[] = "?";
                 if($value instanceof AbstractModel){
                     $fields[] = "id_".$field;
