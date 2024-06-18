@@ -109,4 +109,37 @@ abstract class AbstractModel extends Db implements ModelInterface
         
         $this->executePreparedQuery($sql, [$this->getId()]);
     }
+
+    public function hydrate(array &$data): ?self
+    {
+        foreach ($data as $key => &$value) {
+            if($value != null){
+                $setter = "set" . ucfirst($key);
+                $adder = "add" . ucfirst($key);
+                if(method_exists($this,$setter)){
+                    $this->$setter($value);
+                    unset($data[$key]);
+                }else if(method_exists($this,$adder)){
+                    $this->$adder($value);
+                    unset($data[$key]);
+                }
+                else{
+                    $relationName = str_replace("Id","",$key);
+                    if(property_exists($this,$relationName)){
+                        foreach($data as $key => &$value){
+                            if(str_contains($key,$relationName)){
+                                $data[str_replace($relationName,"",$key)] = $data[$key];
+                                unset($data[$key]);
+                            }
+                        }
+                        $relationPath = "\\App\\Models\\".ucfirst($relationName);
+                        $relation = new $relationPath();
+                        $data[$this->table] = $this; //mappedBy
+                        $relation = $relation->hydrate($data);
+                    }
+                }
+            }
+        }
+        return $this;
+    }
 }
