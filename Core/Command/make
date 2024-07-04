@@ -242,6 +242,7 @@ function model():void{
             EOF;
             file_put_contents($modelPath,implode("\n",$lines));
         }
+        
 
         echo CGREEN."La création du nouveau champ $attribute s'est effectué correctement !".CEND."\n";
         return true;
@@ -291,21 +292,37 @@ function model():void{
                         if(file_exists($entityFile)){
                             require_once $entityFile;
                             if(class_exists("\\App\\Models\\".$entity,false)){
-                                $fieldCreationFinished = $createNewCollumn($entity);
-                                continue 3;
+                                while(!$fieldCreationFinished){
+                                    while(($relation =  readline("De quelle relation est ce champ :")) != ""){
+                                        switch ($relation) {
+                                            case ($relation == '?' || $relation == 'help'):
+                                                echo
+                                                <<<EOF
+                                                    oneToOne
+                                                    oneToMany
+                                                    manyToMany\r\n
+                                                EOF;
+                                                continue 3;
+                                            case 'oneToOne':
+                                                $fieldCreationFinished = $createNewCollumn($entity);
+                                                break;
+                                            case 'oneToMany':
+                                                $fieldCreationFinished = $createNewCollumn($entity);
+                                                break;
+                                            case 'manyToMany':
+                                                $fieldCreationFinished = $createNewCollumn($entity);
+                                                break;
+                                            default:
+                                                echo "je n'ai pas trouver de genre de relation !\n";
+                                                break;
+                                        }
+                                    }
+                                }
                             }
                         }
                         else{
                             echo CYELLOWBG."je n'ai pas trouver la classe !".CEND."\n";
                         }
-                        // if($relation == "oneToMany"){
-                        //     $relation = readline("De quelle relation est ce champ :");
-                        // }
-                        // echo
-                        // <<<EOF
-                        // oneToMany
-                        // MmanyToMany
-                        // EOF;
                     }
                     break;
                 default:

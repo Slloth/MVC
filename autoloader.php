@@ -16,13 +16,19 @@ class Autoloader{
      * @return void
      */
     static private function autoload(string $class){
+        $escapeType = ["int","string","datatime","bool"];
         $class = str_replace('\\',DIRECTORY_SEPARATOR,$class);
         $file = ROOT.$class.'.php';
-        if(file_exists($file)){
-            require_once $file;
-        }else{
-            http_response_code(404);
-            require_once ROOT.'App/Views/errors/404.php';
+        if(!in_array($class,$escapeType)){
+            if(file_exists($file)){
+                require_once $file;
+            }else{
+                http_response_code(404);
+                require_once ROOT.'App/Views/errors/404.php';
+            }
+        }
+        else{
+            return;
         }
     }
 }

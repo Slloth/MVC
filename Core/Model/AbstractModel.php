@@ -6,6 +6,8 @@ use ArrayObject;
 use Core\Db\Db;
 use Core\Model\interface\ModelInterface;
 use DateTimeImmutable;
+use ReflectionClass;
+use ReflectionProperty;
 
 abstract class AbstractModel extends Db implements ModelInterface
 {
@@ -20,6 +22,8 @@ abstract class AbstractModel extends Db implements ModelInterface
     public function insert() : void
     {
         $sql = "";
+
+        $isManyToMany = null;
         
         // Si le tableau de critères est non null et remplie.
         $fields = [];
@@ -28,18 +32,23 @@ abstract class AbstractModel extends Db implements ModelInterface
         
         // On ajoute au tableau de clées " = ?" qui von être remplacé par les attributs à l'execution de la requête.
         foreach ($this as $field => $value) {
-            if (($field !== NULL && $field !== 'table') && (!$value instanceof ArrayObject)) {
+            if (($field !== NULL && $field !== 'table')) {
                 $inters[] = "?";
                 if($value instanceof AbstractModel){
                     $fields[] = "id_".$field;
                     $values[] = $value->getId();
-                }else{
+                    
+                }else if($value instanceof ArrayObject /*&& $value[0]->getArticles()[0] instanceof $this*/){
+                    $b = 'get'. ucfirst($this->table).'s';
+                    $a = get_class($value[0]->$b()[0]);
+                }
+                else{
                     $fields[] = $field;
                     $values[] = $value;
                 }
             }
         }
-        $fields[] = "createdAt";
+        $fields[] = "created_at";
         $inters[] = "?";
         $values[] = date_format(new DateTimeImmutable(),"Y-m-d H:i:s");
         
